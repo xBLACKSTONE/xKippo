@@ -1,0 +1,131 @@
+Metadata-Version: 2.4
+Name: honeypot-monitor-cli
+Version: 0.1.0
+Summary: CLI-based monitoring application for Kippo honeypot traffic analysis
+Home-page: https://github.com/example/honeypot-monitor-cli
+Author: Security Team
+Author-email: security@example.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: System Administrators
+Classifier: Topic :: Security
+Classifier: Topic :: System :: Monitoring
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: textual>=0.41.0
+Requires-Dist: watchdog>=3.0.0
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: irc>=20.3.0
+Requires-Dist: python-dateutil>=2.8.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: pytest>=7.0.0
+Requires-Dist: pytest-asyncio>=0.21.0
+Requires-Dist: black>=23.0.0
+Requires-Dist: flake8>=6.0.0
+Requires-Dist: mypy>=1.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Honeypot Monitor CLI
+
+A terminal-based monitoring application for Kippo honeypot traffic analysis.
+
+## Project Structure
+
+```
+honeypot-monitor-cli/
+├── src/
+│   └── honeypot_monitor/
+│       ├── __init__.py
+│       ├── main.py                 # Main application entry point
+│       ├── interfaces/             # Abstract base classes and interfaces
+│       │   ├── __init__.py
+│       │   ├── log_parser_interface.py
+│       │   ├── monitor_interface.py
+│       │   ├── analyzer_interface.py
+│       │   └── notifier_interface.py
+│       ├── models/                 # Data models
+│       │   ├── __init__.py
+│       │   ├── log_entry.py
+│       │   ├── session.py
+│       │   ├── threat_assessment.py
+│       │   └── irc_alert.py
+│       ├── services/               # Business logic services
+│       │   ├── __init__.py
+│       │   ├── log_monitor.py
+│       │   ├── log_parser.py
+│       │   ├── threat_analyzer.py
+│       │   └── irc_notifier.py
+│       ├── tui/                    # Terminal UI components
+│       │   ├── __init__.py
+│       │   ├── main_app.py
+│       │   ├── dashboard.py
+│       │   ├── log_viewer.py
+│       │   └── analysis_panel.py
+│       └── config/                 # Configuration management
+│           ├── __init__.py
+│           ├── config_manager.py
+│           └── settings.py
+├── config/
+│   └── default.yaml               # Default configuration
+├── tests/                         # Test suite
+│   ├── __init__.py
+│   ├── test_models/
+│   ├── test_services/
+│   ├── test_tui/
+│   └── test_config/
+├── requirements.txt               # Python dependencies
+├── setup.py                      # Package installation script
+└── README.md                     # This file
+```
+
+## Installation
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package in development mode
+pip install -e .
+```
+
+## Usage
+
+```bash
+# Run the application
+honeypot-monitor
+
+# Run with custom config
+honeypot-monitor --config /path/to/config.yaml
+
+# Override log path
+honeypot-monitor --log-path /path/to/kippo.log
+```
+
+## Development Status
+
+This project is currently in development. The basic project structure and interfaces have been established. Individual components will be implemented according to the task list in the specification.
+
+## Requirements
+
+- Python 3.8+
+- textual (TUI framework)
+- watchdog (file monitoring)
+- PyYAML (configuration)
+- irc (IRC notifications)
+
+## License
+
+MIT License

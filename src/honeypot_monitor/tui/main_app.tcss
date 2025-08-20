@@ -1,0 +1,83 @@
+/* CSS styles for the main TUI application */
+
+/* Main container layout */
+#main-container {
+    height: 100%;
+    layout: vertical;
+}
+
+#content-area {
+    height: 1fr;
+    layout: horizontal;
+}
+
+#main-content {
+    width: 1fr;
+    height: 100%;
+    border: solid $primary;
+    padding: 1;
+}
+
+#content-text {
+    width: 100%;
+    height: 100%;
+    content-align: left top;
+}
+
+/* Status bar styling */
+#status-bar {
+    height: 1;
+    background: $surface;
+    color: $text;
+    layout: horizontal;
+    align: left middle;
+    padding: 0 1;
+}
+
+#monitoring-label, #irc-label, #view-label {
+    color: $text-muted;
+}
+
+#monitoring-status {
+    color: $warning;
+    text-style: bold;
+}
+
+#monitoring-status.connected {
+    color: $success;
+}
+
+#irc-status {
+    color: $warning;
+    text-style: bold;
+}
+
+#irc-status.connected {
+    color: $success;
+}
+
+#current-view {
+    color: $accent;
+    text-style: bold;
+}
+
+/* Header and footer customization */
+Header {
+    background: $primary;
+}
+
+Footer {
+    background: $surface;
+}
+
+/* General text styling */
+Static {
+    color: $text;
+}
+
+/* Focus and selection styles */
+*:focus {
+    border: solid $accent;
+}
+
+/* Color scheme variables will be provided by textual's default theme */

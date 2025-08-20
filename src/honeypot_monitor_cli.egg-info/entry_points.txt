@@ -1,0 +1,2 @@
+[console_scripts]
+honeypot-monitor = honeypot_monitor.main:main

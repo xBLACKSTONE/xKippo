@@ -1,0 +1,20 @@
+2024-01-15 16:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] login attempt [root/password] succeeded
+2024-01-15 16:00:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] CMD: whoami
+2024-01-15 16:00:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] CMD: uname -a
+2024-01-15 16:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] connection lost
+2024-01-15 16:02:00+0000 [SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] login attempt [root/password] succeeded
+2024-01-15 16:02:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] CMD: whoami
+2024-01-15 16:02:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] CMD: uname -a
+2024-01-15 16:02:00+0000 [SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] connection lost
+2024-01-15 16:04:00+0000 [SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] login attempt [root/password] succeeded
+2024-01-15 16:04:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] CMD: whoami
+2024-01-15 16:04:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] CMD: uname -a
+2024-01-15 16:04:00+0000 [SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] connection lost
+2024-01-15 16:06:00+0000 [SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] login attempt [root/password] succeeded
+2024-01-15 16:06:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] CMD: whoami
+2024-01-15 16:06:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] CMD: uname -a
+2024-01-15 16:06:00+0000 [SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] connection lost
+2024-01-15 16:08:00+0000 [SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] login attempt [root/password] succeeded
+2024-01-15 16:08:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] CMD: whoami
+2024-01-15 16:08:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] CMD: uname -a
+2024-01-15 16:08:00+0000 [SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] connection lost

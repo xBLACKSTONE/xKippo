@@ -1,0 +1,215 @@
+/* Analysis Panel Styles */
+
+#analysis-panel {
+    height: 100%;
+    width: 100%;
+}
+
+.main-title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+    margin: 1;
+}
+
+.panel-title {
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.section-title {
+    text-style: bold;
+    color: $secondary;
+    margin: 1 0;
+}
+
+/* Threat Categories */
+#threat-categories {
+    height: 100%;
+    padding: 1;
+}
+
+#critical-threats {
+    border: solid $error;
+}
+
+#high-threats {
+    border: solid $warning;
+}
+
+#medium-threats {
+    border: solid $accent;
+}
+
+#low-threats {
+    border: solid $success;
+}
+
+/* Pattern Analysis */
+#pattern-analysis {
+    height: 100%;
+    padding: 1;
+}
+
+#pattern-summary {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#pattern-summary Static {
+    margin-right: 2;
+    text-style: bold;
+}
+
+#patterns-table {
+    height: 1fr;
+    margin-bottom: 1;
+}
+
+#pattern-details {
+    height: auto;
+    max-height: 10;
+}
+
+#pattern-detail-text {
+    padding: 1;
+    background: $surface;
+    border: solid $primary;
+}
+
+/* Custom Rules */
+#custom-rules {
+    height: 100%;
+    padding: 1;
+}
+
+#rule-creator {
+    margin-bottom: 1;
+}
+
+#rule-creator Label {
+    margin-top: 1;
+    text-style: bold;
+}
+
+#rule-creator Input, #rule-creator Select {
+    margin-bottom: 1;
+}
+
+#rules-table {
+    height: 1fr;
+    margin: 1 0;
+}
+
+/* Threat History */
+#threat-history {
+    height: 100%;
+    padding: 1;
+}
+
+#time-controls {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#time-controls Static {
+    margin-right: 1;
+    text-style: bold;
+}
+
+#history-stats {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#history-stats Static {
+    margin-right: 2;
+    text-style: bold;
+}
+
+#history-table {
+    height: 1fr;
+    margin-bottom: 1;
+}
+
+#threat-timeline {
+    height: auto;
+    max-height: 15;
+}
+
+#timeline-scroll {
+    height: 100%;
+    border: solid $primary;
+}
+
+#timeline-content {
+    padding: 1;
+}
+
+/* Button styling */
+Button {
+    margin: 0 1;
+}
+
+Button.primary {
+    background: $primary;
+}
+
+Button.error {
+    background: $error;
+}
+
+Button.default {
+    background: $surface;
+}
+
+/* Data table styling */
+DataTable {
+    border: solid $primary;
+}
+
+DataTable > .datatable--header {
+    text-style: bold;
+    background: $primary;
+}
+
+DataTable > .datatable--cursor {
+    background: $accent;
+}
+
+/* Collapsible styling */
+Collapsible {
+    margin: 1 0;
+    border: solid $surface;
+}
+
+Collapsible > .collapsible--title {
+    text-style: bold;
+    background: $surface;
+}
+
+/* Tabs styling */
+Tabs {
+    height: 100%;
+}
+
+TabPane {
+    height: 100%;
+    padding: 0;
+}
+
+/* Input and Select styling */
+Input {
+    border: solid $primary;
+}
+
+Select {
+    border: solid $primary;
+}
+
+/* Rule styling */
+Rule {
+    margin: 1 0;
+    color: $primary;
+}

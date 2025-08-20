@@ -1,0 +1,294 @@
+/* Settings Panel Styles */
+
+#settings-panel {
+    height: 100%;
+    width: 100%;
+}
+
+.main-title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+    margin: 1;
+}
+
+.panel-title {
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.section-title {
+    text-style: bold;
+    color: $secondary;
+    margin: 1 0;
+}
+
+/* Configuration Editor */
+#config-editor {
+    height: 100%;
+    padding: 1;
+}
+
+#config-file-controls {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#config-file-controls Button {
+    margin-right: 1;
+}
+
+#config-status {
+    margin-left: 2;
+    text-style: italic;
+}
+
+#config-sections {
+    height: 1fr;
+    border: solid $primary;
+}
+
+#config-validation {
+    height: 4;
+    margin-top: 1;
+}
+
+#validation-status {
+    margin-bottom: 1;
+}
+
+/* Collapsible sections */
+Collapsible {
+    margin: 1 0;
+    border: solid $surface;
+}
+
+Collapsible > .collapsible--title {
+    text-style: bold;
+    background: $surface;
+    padding: 0 1;
+}
+
+Collapsible Label {
+    margin-top: 1;
+    text-style: bold;
+    color: $secondary;
+}
+
+Collapsible Input, Collapsible Select {
+    margin-bottom: 1;
+}
+
+Collapsible Button {
+    margin: 0 1 1 0;
+}
+
+/* Switch styling */
+Switch {
+    margin: 0 1;
+}
+
+/* Alert types section */
+#alert-types {
+    margin-top: 1;
+}
+
+#alert-types Horizontal {
+    margin-bottom: 0.5;
+}
+
+#alert-types Label {
+    margin: 0 0 0 1;
+}
+
+/* IRC Connection Tester */
+#irc-tester {
+    height: 100%;
+    padding: 1;
+}
+
+#connection-info {
+    margin-bottom: 1;
+    padding: 1;
+    border: solid $surface;
+}
+
+#connection-info Static {
+    margin-bottom: 0.5;
+}
+
+#test-controls {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#test-controls Button {
+    margin-right: 1;
+}
+
+#connection-status {
+    height: 4;
+    margin-bottom: 1;
+}
+
+#status-display {
+    margin-bottom: 1;
+    text-style: bold;
+}
+
+#connection-log {
+    height: 1fr;
+}
+
+#log-scroll {
+    height: 100%;
+    border: solid $primary;
+}
+
+#log-content {
+    padding: 1;
+    font-family: monospace;
+}
+
+/* Rule Management */
+#rule-management {
+    height: 100%;
+    padding: 1;
+}
+
+#rule-file-ops {
+    height: 3;
+    margin-bottom: 1;
+}
+
+#rule-file-ops Button {
+    margin-right: 1;
+}
+
+#rule-editor-area {
+    height: 1fr;
+}
+
+#rule-list-area {
+    width: 1fr;
+    margin-right: 1;
+}
+
+#rules-table {
+    height: 1fr;
+    margin-bottom: 1;
+    border: solid $primary;
+}
+
+#rule-details-area {
+    width: 1fr;
+    padding-left: 1;
+    border-left: solid $surface;
+}
+
+#rule-details-area Label {
+    margin-top: 1;
+    text-style: bold;
+    color: $secondary;
+}
+
+#rule-details-area Input, #rule-details-area Select, #rule-details-area TextArea {
+    margin-bottom: 1;
+}
+
+#rule-pattern-input, #rule-description-input {
+    height: 4;
+}
+
+#rule-status {
+    margin-top: 1;
+    text-style: bold;
+}
+
+/* Button styling */
+Button {
+    margin: 0 1;
+}
+
+Button.primary {
+    background: $primary;
+}
+
+Button.error {
+    background: $error;
+}
+
+Button.default {
+    background: $surface;
+}
+
+/* Input and form controls */
+Input {
+    border: solid $primary;
+}
+
+Select {
+    border: solid $primary;
+}
+
+TextArea {
+    border: solid $primary;
+}
+
+/* Data table styling */
+DataTable {
+    border: solid $primary;
+}
+
+DataTable > .datatable--header {
+    text-style: bold;
+    background: $primary;
+}
+
+DataTable > .datatable--cursor {
+    background: $accent;
+}
+
+/* Progress bar styling */
+ProgressBar {
+    margin: 1 0;
+}
+
+/* Tabs styling */
+Tabs {
+    height: 100%;
+}
+
+TabPane {
+    height: 100%;
+    padding: 0;
+}
+
+/* Rule styling */
+Rule {
+    margin: 1 0;
+    color: $primary;
+}
+
+/* Scrollable container */
+ScrollableContainer {
+    border: solid $surface;
+}
+
+/* Status indicators */
+.status-success {
+    color: $success;
+}
+
+.status-error {
+    color: $error;
+}
+
+.status-warning {
+    color: $warning;
+}
+
+.status-info {
+    color: $accent;
+}

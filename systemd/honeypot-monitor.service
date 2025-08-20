@@ -1,0 +1,46 @@
+[Unit]
+Description=Honeypot Monitor CLI - Kippo Traffic Analysis
+Documentation=https://github.com/example/honeypot-monitor-cli
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+ExecStart=/home/%i/.honeypot-monitor/honeypot-monitor --daemon --config /home/%i/.honeypot-monitor/config/config.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/%i/.honeypot-monitor
+
+# Environment
+Environment=PATH=/home/%i/.honeypot-monitor/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/home/%i/.honeypot-monitor/venv/lib/python3.*/site-packages
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=honeypot-monitor
+
+[Install]
+WantedBy=multi-user.target
+
+# Usage Instructions:
+# 1. Copy this file to /etc/systemd/system/honeypot-monitor@.service
+# 2. Enable for a specific user: systemctl enable honeypot-monitor@username.service
+# 3. Start the service: systemctl start honeypot-monitor@username.service
+# 4. Check status: systemctl status honeypot-monitor@username.service
+#
+# For user-level service (recommended):
+# 1. Copy to ~/.config/systemd/user/honeypot-monitor.service
+# 2. Remove the User= and Group= lines
+# 3. Update paths to remove %i placeholder
+# 4. Use: systemctl --user enable honeypot-monitor.service

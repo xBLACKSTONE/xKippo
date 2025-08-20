@@ -1,0 +1,7 @@
+Invalid log entry without proper format
+2024-01-15 [Incomplete timestamp entry
+2024-01-15 17:00:00+0000 [Missing transport info] CMD: test
+
+2024-01-15 17:00:05+0000 [SSHService ssh-connection on HoneyPotTransport,60,192.168.1.120] login attempt [user/pass] succeeded
+Completely malformed entry with no structure at all
+2024-01-15 17:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,60,192.168.1.120] CMD: ls

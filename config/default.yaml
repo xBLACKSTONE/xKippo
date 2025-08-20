@@ -1,0 +1,30 @@
+# Default configuration for Honeypot Monitor CLI
+# This file will be fully implemented in task 3.1
+
+honeypot:
+  log_path: "/opt/kippo/log/kippo.log"
+  log_format: "kippo_default"
+
+monitoring:
+  refresh_interval: 1.0
+  max_entries_memory: 10000
+
+analysis:
+  threat_threshold: "medium"
+  custom_rules_path: "./rules/"
+
+irc:
+  enabled: true
+  server: "irc.freenode.net"
+  port: 6667
+  channel: "#security-alerts"
+  nickname: "honeypot-monitor"
+  ssl: false
+  alert_types:
+    - "new_host"
+    - "high_threat"
+    - "interesting_traffic"
+
+interface:
+  theme: "dark"
+  key_bindings: "default"

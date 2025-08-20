@@ -1,0 +1,137 @@
+/* CSS styles for dashboard components */
+
+/* Dashboard layout */
+#dashboard {
+    height: 100%;
+    layout: horizontal;
+}
+
+.dashboard-left {
+    width: 2fr;
+    height: 100%;
+    layout: vertical;
+    margin: 0 1 0 0;
+}
+
+.dashboard-right {
+    width: 1fr;
+    height: 100%;
+    layout: vertical;
+    margin: 0 0 0 1;
+}
+
+/* Panel titles */
+.panel-title {
+    background: $primary;
+    color: $text;
+    text-style: bold;
+    text-align: center;
+    height: 1;
+    padding: 0 1;
+}
+
+/* Activity Feed */
+#activity-feed {
+    height: 2fr;
+    border: solid $primary;
+    margin: 0 0 1 0;
+}
+
+#activity-content {
+    height: 100%;
+    layout: vertical;
+    padding: 1;
+}
+
+.activity-entry {
+    height: 1;
+    color: $text;
+    margin: 0 0 0 0;
+}
+
+/* Connection Statistics */
+#connection-stats {
+    height: 1fr;
+    border: solid $primary;
+    margin: 0 0 1 0;
+}
+
+#stats-content {
+    layout: vertical;
+    padding: 1;
+    height: 100%;
+}
+
+#active-sessions, #total-connections, #unique-ips, #blocked-attempts {
+    height: 1;
+    color: $text;
+    margin: 0 0 1 0;
+}
+
+/* Alert Panel */
+#alert-panel {
+    height: 1fr;
+    border: solid $warning;
+    margin: 0 0 1 0;
+}
+
+#alerts-content {
+    layout: vertical;
+    padding: 1;
+    height: 100%;
+}
+
+.alert-entry {
+    height: 1;
+    margin: 0 0 0 0;
+}
+
+.alert-info {
+    color: $text;
+}
+
+.alert-warning {
+    color: $warning;
+    text-style: bold;
+}
+
+.alert-error {
+    color: $error;
+    text-style: bold;
+}
+
+.alert-critical {
+    color: $error;
+    text-style: bold;
+    background: $surface;
+}
+
+.alert-success {
+    color: $success;
+}
+
+.no-alerts {
+    color: $text-muted;
+    text-style: italic;
+    text-align: center;
+}
+
+/* IRC Status */
+#irc-status {
+    height: 1fr;
+    border: solid $accent;
+}
+
+#irc-content {
+    layout: vertical;
+    padding: 1;
+    height: 100%;
+}
+
+#irc-connection, #irc-server, #irc-last-message {
+    height: 1;
+    color: $text;
+    margin: 0 0 1 0;
+}
+
+/* Note: Textual doesn't support @media queries yet */

