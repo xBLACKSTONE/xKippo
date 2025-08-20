@@ -93,18 +93,17 @@ class HoneypotMonitorApp(App):
         self.title = self.TITLE
         self.sub_title = self.SUB_TITLE
         
-        # Start services if not already started
-        print(f"DEBUG: service_coordinator exists: {self.service_coordinator is not None}")  # Debug output
-        if self.service_coordinator:
-            print(f"DEBUG: service_coordinator.is_running: {self.service_coordinator.is_running}")  # Debug output
-        
-        if self.service_coordinator and not self.service_coordinator.is_running:
-            print("DEBUG: About to start monitoring services")  # Debug output
-            self._start_monitoring_services()
-            print("DEBUG: _start_monitoring_services() completed")  # Debug output
-        
         print("DEBUG: About to show dashboard")  # Debug output
         self.action_show_dashboard()
+        print("DEBUG: Dashboard shown, now starting services in background")  # Debug output
+        
+        # Start services in background thread to avoid blocking TUI
+        if self.service_coordinator and not self.service_coordinator.is_running:
+            print("DEBUG: Starting services in background thread")  # Debug output
+            import threading
+            service_thread = threading.Thread(target=self._start_monitoring_services, daemon=True)
+            service_thread.start()
+        
         print("DEBUG: on_mount() completed")  # Debug output
     
     def action_quit(self) -> None:
@@ -414,10 +413,16 @@ Navigation:
     def _initialize_services(self) -> None:
         """Initialize the service coordinator and backend services."""
         try:
+            print("DEBUG: Creating ServiceCoordinator...")  # Debug output
             self.service_coordinator = ServiceCoordinator(self.config)
+            print("DEBUG: ServiceCoordinator created, setting up subscriptions...")  # Debug output
             self._setup_event_subscriptions()
+            print("DEBUG: Event subscriptions set up")  # Debug output
             logging.info("Services initialized successfully")
         except Exception as e:
+            print(f"DEBUG: Failed to initialize services: {e}")  # Debug output
+            import traceback
+            traceback.print_exc()
             logging.error(f"Failed to initialize services: {e}")
             # Continue without services - TUI will show sample data
     
@@ -457,14 +462,41 @@ Navigation:
         event_manager.subscribe(EventType.SYSTEM_ERROR, self._handle_system_error)
     
     def _start_monitoring_services(self) -> None:
-        """Start the monitoring services."""
+        """Start the monitoring services with timeout."""
         if not self.service_coordinator:
             logging.warning("No service coordinator available")
             return
         
         try:
-            print("DEBUG: Starting service coordinator...")  # Debug output
-            success = self.service_coordinator.start()
+            print("DEBUG: Starting service coordinator with timeout...")  # Debug output
+            
+            # Use a timeout to prevent hanging
+            import signal
+            import threading
+            
+            success = False
+            exception = None
+            
+            def start_services():
+                nonlocal success, exception
+                try:
+                    success = self.service_coordinator.start()
+                except Exception as e:
+                    exception = e
+            
+            # Start services in thread with timeout
+            service_thread = threading.Thread(target=start_services, daemon=True)
+            service_thread.start()
+            service_thread.join(timeout=10.0)  # 10 second timeout
+            
+            if service_thread.is_alive():
+                print("DEBUG: Service startup timed out after 10 seconds")  # Debug output
+                self.update_monitoring_status("Startup timeout")
+                return
+            
+            if exception:
+                raise exception
+                
             if success:
                 print("DEBUG: Service coordinator started successfully!")  # Debug output
                 self.update_monitoring_status("Connected")
@@ -473,6 +505,7 @@ Navigation:
                 print("DEBUG: Service coordinator failed to start!")  # Debug output
                 self.update_monitoring_status("Failed to start")
                 logging.error("Failed to start monitoring services")
+                
         except Exception as e:
             print(f"DEBUG: Exception starting services: {e}")  # Debug output
             import traceback

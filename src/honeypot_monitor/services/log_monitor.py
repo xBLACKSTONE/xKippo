@@ -269,24 +269,31 @@ class LogMonitor(MonitorInterface):
                 f.seek(0, 2)  # Seek to end
                 file_size = f.tell()
                 
-                # Read last 100 lines to populate dashboard with recent activity
+                # Read last 20 lines to populate dashboard (reduced to avoid blocking)
                 print("DEBUG: Reading recent log entries for dashboard...")  # Debug output
                 
-                # Start from a position that should give us ~100 lines
-                # Estimate ~100 bytes per line, so go back ~10KB
-                start_pos = max(0, file_size - 10000)
+                # Start from a position that should give us ~20 lines
+                # Estimate ~100 bytes per line, so go back ~2KB
+                start_pos = max(0, file_size - 2000)
                 f.seek(start_pos)
                 
                 # Read lines from this position
                 lines = f.readlines()
                 
-                # Take the last 100 lines (or all if fewer)
-                recent_lines = lines[-100:] if len(lines) > 100 else lines
+                # Take the last 20 lines (or all if fewer) to avoid blocking
+                recent_lines = lines[-20:] if len(lines) > 20 else lines
                 
                 print(f"DEBUG: Processing {len(recent_lines)} recent log entries...")  # Debug output
                 
-                # Process these recent entries
-                self._process_new_lines(recent_lines)
+                # Process these recent entries in a non-blocking way
+                if recent_lines:
+                    # Process in smaller batches to avoid blocking
+                    import threading
+                    def process_entries():
+                        self._process_new_lines(recent_lines)
+                    
+                    # Process in background thread
+                    threading.Thread(target=process_entries, daemon=True).start()
                 
                 # Set file position to end for future monitoring
                 self._file_position = file_size

@@ -189,6 +189,15 @@ update_application() {
         print_info "Copied simple TUI script"
     fi
     
+    if [ -f "create_working_launcher.sh" ]; then
+        cp create_working_launcher.sh "$INSTALL_DIR/"
+        chmod +x "$INSTALL_DIR/create_working_launcher.sh"
+        print_info "Copied working launcher script"
+        
+        # Run it to create the working launcher
+        cd "$INSTALL_DIR" && ./create_working_launcher.sh
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall
