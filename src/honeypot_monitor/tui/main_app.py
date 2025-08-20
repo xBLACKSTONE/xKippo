@@ -39,6 +39,8 @@ class HoneypotMonitorApp(App):
     # Key bindings for navigation
     BINDINGS = [
         Binding("q", "quit", "Quit", priority=True),
+        Binding("ctrl+c", "force_quit", "Force Quit", priority=True),
+        Binding("escape", "quit", "Quit", priority=True),
         Binding("d", "show_dashboard", "Dashboard"),
         Binding("l", "show_logs", "Logs"),
         Binding("a", "show_analysis", "Analysis"),
@@ -98,7 +100,31 @@ class HoneypotMonitorApp(App):
     
     def action_quit(self) -> None:
         """Quit the application."""
-        self._cleanup_services()
+        try:
+            # Set a timeout for cleanup to prevent hanging
+            import signal
+            import threading
+            
+            def cleanup_with_timeout():
+                self._cleanup_services()
+            
+            # Run cleanup in a separate thread with timeout
+            cleanup_thread = threading.Thread(target=cleanup_with_timeout, daemon=True)
+            cleanup_thread.start()
+            cleanup_thread.join(timeout=3.0)  # 3 second timeout
+            
+            if cleanup_thread.is_alive():
+                logging.warning("Cleanup timed out, forcing exit")
+            
+        except Exception as e:
+            logging.error(f"Error during quit: {e}")
+        finally:
+            # Force exit regardless of cleanup status
+            self.exit()
+    
+    def action_force_quit(self) -> None:
+        """Force quit the application without cleanup."""
+        logging.info("Force quit requested")
         self.exit()
     
     def action_show_dashboard(self) -> None:
@@ -184,7 +210,8 @@ class HoneypotMonitorApp(App):
 Honeypot Monitor CLI - Help
 
 Key Bindings:
-  q - Quit application
+  q / ESC - Quit application
+  Ctrl+C - Force quit (if app hangs)
   d - Dashboard view
   l - Log viewer
   a - Analysis panel

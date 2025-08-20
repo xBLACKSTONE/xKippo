@@ -340,9 +340,11 @@ class EventManager:
         logger.info("Shutting down event manager")
         self.shutdown_event.set()
         
-        # Wait for workers to finish
+        # Wait for workers to finish with shorter timeout
         for worker in self.workers:
-            worker.join(timeout=5.0)
+            worker.join(timeout=2.0)
+            if worker.is_alive():
+                logger.warning(f"Worker {worker.name} did not shut down gracefully")
         
         # Clear remaining events
         while not self.event_queue.empty():
@@ -350,6 +352,8 @@ class EventManager:
                 self.event_queue.get_nowait()
             except Empty:
                 break
+        
+        logger.info("Event manager shutdown complete")
     
     def _start_workers(self) -> None:
         """Start worker threads for event processing."""
