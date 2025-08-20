@@ -264,7 +264,8 @@ class LogViewer(Widget):
     def on_mount(self) -> None:
         """Initialize the log viewer when mounted."""
         self._setup_table()
-        self._load_sample_data()
+        # Sample data disabled - using real log data
+        # self._load_sample_data()
         self._update_display()
     
     def _setup_table(self) -> None:

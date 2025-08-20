@@ -144,8 +144,8 @@ class HoneypotMonitorApp(App):
         
         main_content.mount(self.dashboard)
         
-        # Add some sample data for demonstration
-        self._populate_sample_data()
+        # Sample data disabled - using real log data
+        # self._populate_sample_data()
     
     def _show_log_viewer(self) -> None:
         """Display the log viewer with all components."""
@@ -181,8 +181,8 @@ class HoneypotMonitorApp(App):
         
         main_content.mount(self.analysis_panel)
         
-        # Add some sample data for demonstration
-        self._populate_sample_analysis_data()
+        # Sample data disabled - using real analysis data
+        # self._populate_sample_analysis_data()
     
     def action_show_settings(self) -> None:
         """Show the settings panel."""
@@ -454,14 +454,20 @@ Navigation:
             return
         
         try:
+            print("DEBUG: Starting service coordinator...")  # Debug output
             success = self.service_coordinator.start()
             if success:
+                print("DEBUG: Service coordinator started successfully!")  # Debug output
                 self.update_monitoring_status("Connected")
                 logging.info("Monitoring services started successfully")
             else:
+                print("DEBUG: Service coordinator failed to start!")  # Debug output
                 self.update_monitoring_status("Failed to start")
                 logging.error("Failed to start monitoring services")
         except Exception as e:
+            print(f"DEBUG: Exception starting services: {e}")  # Debug output
+            import traceback
+            traceback.print_exc()
             self.update_monitoring_status("Error")
             logging.error(f"Error starting monitoring services: {e}")
     
