@@ -206,15 +206,27 @@ install_python_deps() {
     print_step "Installing Python dependencies..."
     
     # Upgrade pip first
+    print_info "Upgrading pip..."
     pip install --upgrade pip
     
     # Install the package in development mode
+    print_info "Installing honeypot-monitor and dependencies..."
     pip install -e .
     
     if [ $? -eq 0 ]; then
         print_success "Python dependencies installed successfully"
+        
+        # Verify critical dependencies are installed
+        print_info "Verifying installation..."
+        python -c "import psutil, textual, watchdog, yaml" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            print_success "All critical dependencies verified"
+        else
+            print_warning "Some dependencies may not be properly installed"
+        fi
     else
         print_error "Failed to install Python dependencies"
+        print_error "Try running: pip install -r requirements.txt"
         return 1
     fi
 }
@@ -363,6 +375,18 @@ EOF
 
 # Create systemd service (optional)
 create_service() {
+    # Check if we're on a system that supports systemd
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        print_info "Skipping systemd service creation (macOS detected)"
+        print_info "You can run the monitor manually or create a launchd service if needed"
+        return 0
+    fi
+    
+    if ! command_exists systemctl; then
+        print_info "Skipping systemd service creation (systemctl not found)"
+        return 0
+    fi
+    
     if prompt_yes_no "Create systemd service for background operation?" "n"; then
         print_step "Creating systemd service..."
         

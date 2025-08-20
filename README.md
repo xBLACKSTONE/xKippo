@@ -36,6 +36,26 @@ The installer will:
 - Configure IRC notifications (optional)
 - Create launcher scripts and systemd service (optional)
 
+### Updating
+
+To update an existing installation with the latest code changes:
+
+```bash
+# Clone or pull the latest changes
+git clone <repository-url> honeypot-monitor-update
+cd honeypot-monitor-update
+
+# Run the update script
+chmod +x update.sh
+./update.sh
+```
+
+The update script will:
+- Preserve your existing configuration
+- Update the application code and dependencies
+- Restart services if they were running
+- Backup your config before making changes
+
 ### Manual Installation
 
 If you prefer manual installation:

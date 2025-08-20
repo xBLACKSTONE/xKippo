@@ -101,7 +101,7 @@ class KippoLogParser(LogParserInterface):
     def __init__(self):
         """Initialize the parser with regex patterns for different log types."""
         self._patterns = self._compile_patterns()
-        self._supported_formats = ['kippo_default', 'kippo_json', 'kippo_syslog']
+        self._supported_formats = ['kippo_default', 'kippo_json', 'kippo_syslog', 'cowrie']
         self._session_correlator = SessionCorrelator()
         self._parse_errors: List[Tuple[str, str]] = []  # (line, error_message)
         self._command_extractors = self._compile_command_extractors()
@@ -116,7 +116,7 @@ class KippoLogParser(LogParserInterface):
         """
         patterns = {}
         
-        # More flexible base pattern that can handle various timestamp formats or malformed ones
+        # More flexible base pattern that can handle various timestamp formats (Kippo and Cowrie)
         base_pattern = r'(?P<timestamp>[^\[]*?) \[(?P<service>[^\]]+)\] '
         
         # Connection established
@@ -154,6 +154,19 @@ class KippoLogParser(LogParserInterface):
         
         patterns['session_end'] = re.compile(
             base_pattern + r'Connection lost: (?P<source_ip>\d+\.\d+\.\d+\.\d+):(?P<port>\d+) \((?P<session_id>[^)]+)\)'
+        )
+        
+        # Cowrie-specific patterns
+        patterns['cowrie_new_connection'] = re.compile(
+            base_pattern + r'New connection: (?P<source_ip>\d+\.\d+\.\d+\.\d+):(?P<port>\d+) \([^)]+\) \[session: (?P<session_id>[^\]]+)\]'
+        )
+        
+        patterns['cowrie_login_attempt'] = re.compile(
+            base_pattern + r'login attempt \[(?P<username>[^/]+)/(?P<password>[^\]]+)\] failed'
+        )
+        
+        patterns['cowrie_connection_lost'] = re.compile(
+            base_pattern + r'Connection lost after (?P<duration>[\d.]+) seconds'
         )
         
         # Generic pattern for unmatched lines
@@ -207,9 +220,12 @@ class KippoLogParser(LogParserInterface):
         # Parse timestamp
         timestamp_str = groups.get('timestamp', '').strip()
         try:
-            # Try to parse standard Kippo timestamp format first
-            if re.match(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[+-]\d{4}', timestamp_str):
-                # Standard format: 2024-01-15 10:30:45+0000
+            # Try to parse Cowrie ISO timestamp format first
+            if re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z', timestamp_str):
+                # Cowrie format: 2025-08-20T21:07:03.844627Z
+                timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            elif re.match(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[+-]\d{4}', timestamp_str):
+                # Standard Kippo format: 2024-01-15 10:30:45+0000
                 clean_timestamp = timestamp_str.split('+')[0].split('-')
                 if len(clean_timestamp) >= 3:
                     date_part = '-'.join(clean_timestamp[:3])

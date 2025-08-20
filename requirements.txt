@@ -13,6 +13,7 @@ irc>=20.3.0
 # Additional utilities
 python-dateutil>=2.8.0
 click>=8.0.0
+psutil>=5.9.0
 
 # Development dependencies (optional)
 pytest>=7.0.0

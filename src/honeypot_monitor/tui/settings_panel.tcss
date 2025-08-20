@@ -95,7 +95,7 @@ Switch {
 }
 
 #alert-types Horizontal {
-    margin-bottom: 0.5;
+    margin-bottom: 1;
 }
 
 #alert-types Label {
@@ -115,7 +115,7 @@ Switch {
 }
 
 #connection-info Static {
-    margin-bottom: 0.5;
+    margin-bottom: 1;
 }
 
 #test-controls {
@@ -148,7 +148,6 @@ Switch {
 
 #log-content {
     padding: 1;
-    font-family: monospace;
 }
 
 /* Rule Management */
