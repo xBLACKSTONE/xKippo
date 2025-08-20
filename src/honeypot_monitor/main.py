@@ -35,14 +35,20 @@ def main():
     
     try:
         # Load configuration
+        print(f"DEBUG: Loading config from: {args.config}")  # Debug output
         config_manager = ConfigManager()
         config = config_manager.load_config(args.config)
+        print(f"DEBUG: Config loaded successfully")  # Debug output
+        print(f"DEBUG: Log path: {config.honeypot.log_path}")  # Debug output
+        print(f"DEBUG: Log format: {config.honeypot.log_format}")  # Debug output
         
         # Override log path if provided
         if args.log_path:
+            print(f"DEBUG: Overriding log path to: {args.log_path}")  # Debug output
             config.honeypot.log_path = args.log_path
         
         # Start the TUI application with integrated services
+        print("DEBUG: Starting TUI application...")  # Debug output
         app = HoneypotMonitorApp(config=config)
         app.run()
         
