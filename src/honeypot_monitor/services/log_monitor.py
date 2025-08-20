@@ -35,9 +35,13 @@ class LogFileHandler(FileSystemEventHandler):
             event: File system event
         """
         if isinstance(event, FileModifiedEvent) and not event.is_directory:
+            print(f"DEBUG: File modified event: {event.src_path}")  # Debug output
             # Check if this is our monitored log file
             if event.src_path == self.log_monitor.log_path:
+                print(f"DEBUG: Matched our log file, handling change")  # Debug output
                 self.log_monitor._handle_file_change()
+            else:
+                print(f"DEBUG: Not our log file (expected: {self.log_monitor.log_path})")  # Debug output
 
 
 class LogMonitor(MonitorInterface):
@@ -89,31 +93,43 @@ class LogMonitor(MonitorInterface):
             PermissionError: If no read permission for log file
             RuntimeError: If already monitoring or setup fails
         """
+        print(f"DEBUG: Starting log monitoring for: {log_path}")  # Debug output
+        
         if self.is_monitoring:
+            print("DEBUG: Already monitoring, raising error")  # Debug output
             raise RuntimeError("Already monitoring a log file. Stop current monitoring first.")
         
         # Validate log file
         if not os.path.exists(log_path):
+            print(f"DEBUG: Log file not found: {log_path}")  # Debug output
             raise FileNotFoundError(f"Log file not found: {log_path}")
         
         if not os.access(log_path, os.R_OK):
+            print(f"DEBUG: No read permission for: {log_path}")  # Debug output
             raise PermissionError(f"No read permission for log file: {log_path}")
         
         self.log_path = os.path.abspath(log_path)
+        print(f"DEBUG: Log path set to: {self.log_path}")  # Debug output
         
         try:
             # Set up file monitoring
+            print("DEBUG: Setting up file monitoring...")  # Debug output
             self._setup_file_monitoring()
             
             # Read existing content to get current position
+            print("DEBUG: Initializing file position...")  # Debug output
             self._initialize_file_position()
+            print(f"DEBUG: File position initialized to: {self._file_position}")  # Debug output
             
             # Start the observer
+            print("DEBUG: Starting file observer...")  # Debug output
             self.observer.start()
             self.is_monitoring = True
             self._reconnect_attempts = 0
+            print("DEBUG: Log monitoring started successfully!")  # Debug output
             
         except Exception as e:
+            print(f"DEBUG: Error starting monitoring: {str(e)}")  # Debug output
             self._cleanup()
             raise RuntimeError(f"Failed to start monitoring: {str(e)}")
     
@@ -257,13 +273,17 @@ class LogMonitor(MonitorInterface):
     
     def _handle_file_change(self) -> None:
         """Handle file change events - read new content and process."""
+        print("DEBUG: File change detected!")  # Debug output
+        
         if not self.is_monitoring or not self.log_path:
+            print("DEBUG: Not monitoring or no log path, ignoring change")  # Debug output
             return
         
         try:
             self._read_new_content()
             self._reconnect_attempts = 0  # Reset on successful read
         except Exception as e:
+            print(f"DEBUG: Error handling file change: {str(e)}")  # Debug output
             self._handle_read_error(e)
     
     def _read_new_content(self) -> None:
