@@ -179,6 +179,11 @@ update_application() {
         print_info "Copied launcher fix script"
     fi
     
+    if [ -f "simple_monitor.py" ]; then
+        cp simple_monitor.py "$INSTALL_DIR/"
+        print_info "Copied simple monitor script"
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall
