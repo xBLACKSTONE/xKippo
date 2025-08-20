@@ -363,6 +363,7 @@ class LogMonitor(MonitorInterface):
             if entry is None:
                 # Parser failed but didn't raise exception
                 self._parse_errors.append(f"Failed to parse: {line.strip()}")
+                print(f"DEBUG: Failed to parse line: {line.strip()}")  # Debug output
                 # Create fallback entry
                 from datetime import datetime
                 entry = LogEntry(
@@ -372,10 +373,13 @@ class LogMonitor(MonitorInterface):
                     source_ip="0.0.0.0",
                     message=line.strip()
                 )
+            else:
+                print(f"DEBUG: Successfully parsed: {entry.event_type} from {entry.source_ip}")  # Debug output
             return entry
         except Exception as e:
             # Parser raised an exception
             self._parse_errors.append(f"Parse error for '{line.strip()}': {str(e)}")
+            print(f"DEBUG: Parse exception: {str(e)} for line: {line.strip()}")  # Debug output
             # Create fallback entry
             from datetime import datetime
             return LogEntry(
@@ -392,9 +396,11 @@ class LogMonitor(MonitorInterface):
         Args:
             entry: New LogEntry to send to callbacks
         """
+        print(f"DEBUG: Notifying {len(self.callbacks)} callbacks for entry: {entry.event_type}")  # Debug output
         for callback in self.callbacks:
             try:
                 callback(entry)
+                print(f"DEBUG: Callback executed successfully")  # Debug output
             except Exception as e:
                 # Log callback errors but don't stop processing
                 # In a real implementation, we'd use proper logging
