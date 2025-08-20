@@ -184,6 +184,11 @@ update_application() {
         print_info "Copied simple monitor script"
     fi
     
+    if [ -f "simple_tui.py" ]; then
+        cp simple_tui.py "$INSTALL_DIR/"
+        print_info "Copied simple TUI script"
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall
