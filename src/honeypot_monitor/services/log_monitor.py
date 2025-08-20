@@ -262,12 +262,35 @@ class LogMonitor(MonitorInterface):
         self.observer.schedule(self.file_handler, log_dir, recursive=False)
     
     def _initialize_file_position(self) -> None:
-        """Initialize file position to end of file for new content monitoring."""
+        """Initialize file position and process recent entries for dashboard population."""
         try:
             with open(self.log_path, 'r', encoding='utf-8', errors='replace') as f:
-                # Seek to end to get file size
+                # Get file size
                 f.seek(0, 2)  # Seek to end
-                self._file_position = f.tell()
+                file_size = f.tell()
+                
+                # Read last 100 lines to populate dashboard with recent activity
+                print("DEBUG: Reading recent log entries for dashboard...")  # Debug output
+                
+                # Start from a position that should give us ~100 lines
+                # Estimate ~100 bytes per line, so go back ~10KB
+                start_pos = max(0, file_size - 10000)
+                f.seek(start_pos)
+                
+                # Read lines from this position
+                lines = f.readlines()
+                
+                # Take the last 100 lines (or all if fewer)
+                recent_lines = lines[-100:] if len(lines) > 100 else lines
+                
+                print(f"DEBUG: Processing {len(recent_lines)} recent log entries...")  # Debug output
+                
+                # Process these recent entries
+                self._process_new_lines(recent_lines)
+                
+                # Set file position to end for future monitoring
+                self._file_position = file_size
+                
         except IOError as e:
             raise RuntimeError(f"Failed to initialize file position: {str(e)}")
     
