@@ -6,7 +6,23 @@ Debug script to test honeypot monitor startup step by step.
 import sys
 import os
 import yaml
-sys.path.insert(0, 'src')
+
+# Add the virtual environment's site-packages to Python path
+venv_path = "/home/cowrie/.honeypot-monitor/venv"
+site_packages = None
+
+# Find the site-packages directory
+for root, dirs, files in os.walk(venv_path):
+    if 'site-packages' in dirs:
+        site_packages = os.path.join(root, 'site-packages')
+        break
+
+if site_packages:
+    sys.path.insert(0, site_packages)
+    print(f"DEBUG: Added to Python path: {site_packages}")
+else:
+    print("DEBUG: Could not find site-packages, trying src directory")
+    sys.path.insert(0, 'src')
 
 def test_basic_functionality():
     """Test each component step by step."""

@@ -189,21 +189,28 @@ update_application() {
         
         if [ $? -eq 0 ]; then
             print_info "Copying updated source files..."
-            # Copy source files to the virtual environment
-            SITE_PACKAGES="$VENV_DIR/lib/python*/site-packages"
-            if [ -d "$SITE_PACKAGES" ]; then
-                # Find the actual site-packages directory
-                ACTUAL_SITE_PACKAGES=$(find "$VENV_DIR/lib" -name "site-packages" -type d | head -1)
-                if [ -n "$ACTUAL_SITE_PACKAGES" ]; then
-                    rm -rf "$ACTUAL_SITE_PACKAGES/honeypot_monitor" 2>/dev/null || true
-                    cp -r src/honeypot_monitor "$ACTUAL_SITE_PACKAGES/"
-                    print_success "Source files updated successfully"
-                else
-                    print_error "Could not find site-packages directory"
-                    return 1
+            # Find the actual site-packages directory
+            ACTUAL_SITE_PACKAGES=$(find "$VENV_DIR/lib" -name "site-packages" -type d | head -1)
+            if [ -n "$ACTUAL_SITE_PACKAGES" ]; then
+                print_info "Found site-packages at: $ACTUAL_SITE_PACKAGES"
+                
+                # Remove old installation
+                rm -rf "$ACTUAL_SITE_PACKAGES/honeypot_monitor" 2>/dev/null || true
+                rm -rf "$ACTUAL_SITE_PACKAGES/honeypot_monitor_cli"* 2>/dev/null || true
+                
+                # Copy source files
+                cp -r src/honeypot_monitor "$ACTUAL_SITE_PACKAGES/"
+                print_success "Source files copied to: $ACTUAL_SITE_PACKAGES/honeypot_monitor"
+                
+                # Create a simple __init__.py if it doesn't exist
+                if [ ! -f "$ACTUAL_SITE_PACKAGES/honeypot_monitor/__init__.py" ]; then
+                    echo '"""Honeypot Monitor CLI package."""' > "$ACTUAL_SITE_PACKAGES/honeypot_monitor/__init__.py"
                 fi
+                
+                print_success "Source files updated successfully"
             else
-                print_error "Could not locate site-packages directory"
+                print_error "Could not find site-packages directory"
+                print_error "Searched in: $VENV_DIR/lib"
                 return 1
             fi
         else
