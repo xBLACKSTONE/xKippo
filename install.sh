@@ -354,11 +354,8 @@ INSTALL_DIR="$INSTALL_DIR"
 VENV_DIR="$VENV_DIR"
 CONFIG_DIR="$CONFIG_DIR"
 
-# Activate virtual environment
-source "\$VENV_DIR/bin/activate"
-
-# Run the application
-python -m honeypot_monitor.main --config "\$CONFIG_DIR/config.yaml" "\$@"
+# Use virtual environment Python directly (more reliable than source activate)
+"\$VENV_DIR/bin/python" -m honeypot_monitor.main --config "\$CONFIG_DIR/config.yaml" "\$@"
 EOF
     
     chmod +x "$INSTALL_DIR/honeypot-monitor"

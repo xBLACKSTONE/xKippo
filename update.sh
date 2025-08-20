@@ -174,6 +174,11 @@ update_application() {
         print_info "Copied startup debug script"
     fi
     
+    if [ -f "fix_launcher.sh" ]; then
+        cp fix_launcher.sh "$INSTALL_DIR/"
+        print_info "Copied launcher fix script"
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall
@@ -227,6 +232,23 @@ update_application() {
     else
         print_warning "Some dependencies may need attention"
     fi
+    
+    # Update launcher script to use virtual environment Python directly
+    print_info "Updating launcher script..."
+    cat > "$INSTALL_DIR/honeypot-monitor" << EOF
+#!/bin/bash
+# Honeypot Monitor CLI Launcher
+
+INSTALL_DIR="$INSTALL_DIR"
+VENV_DIR="$VENV_DIR"
+CONFIG_DIR="$CONFIG_DIR"
+
+# Use virtual environment Python directly (more reliable than source activate)
+"\$VENV_DIR/bin/python" -m honeypot_monitor.main --config "\$CONFIG_DIR/config.yaml" "\$@"
+EOF
+    
+    chmod +x "$INSTALL_DIR/honeypot-monitor"
+    print_success "Launcher script updated"
 }
 
 # Restore configuration
