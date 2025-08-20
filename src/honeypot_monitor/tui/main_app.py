@@ -89,14 +89,23 @@ class HoneypotMonitorApp(App):
     
     def on_mount(self) -> None:
         """Called when the app is mounted."""
+        print("DEBUG: on_mount() called")  # Debug output
         self.title = self.TITLE
         self.sub_title = self.SUB_TITLE
         
         # Start services if not already started
-        if self.service_coordinator and not self.service_coordinator.is_running:
-            self._start_monitoring_services()
+        print(f"DEBUG: service_coordinator exists: {self.service_coordinator is not None}")  # Debug output
+        if self.service_coordinator:
+            print(f"DEBUG: service_coordinator.is_running: {self.service_coordinator.is_running}")  # Debug output
         
+        if self.service_coordinator and not self.service_coordinator.is_running:
+            print("DEBUG: About to start monitoring services")  # Debug output
+            self._start_monitoring_services()
+            print("DEBUG: _start_monitoring_services() completed")  # Debug output
+        
+        print("DEBUG: About to show dashboard")  # Debug output
         self.action_show_dashboard()
+        print("DEBUG: on_mount() completed")  # Debug output
     
     def action_quit(self) -> None:
         """Quit the application."""

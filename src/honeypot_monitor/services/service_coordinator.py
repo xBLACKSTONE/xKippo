@@ -90,12 +90,17 @@ class ServiceCoordinator:
         Returns:
             True if all services started successfully, False otherwise
         """
+        print("DEBUG: ServiceCoordinator.start() called")  # Debug output
         with self._lock:
+            print("DEBUG: Acquired lock")  # Debug output
             if self.is_running:
+                print("DEBUG: Services already running")  # Debug output
                 logger.warning("Services already running")
                 return True
             
+            print("DEBUG: About to start honeypot monitoring services")  # Debug output
             logger.info("Starting honeypot monitoring services")
+            print("DEBUG: Logger message sent")  # Debug output
             
             try:
                 # Start log monitoring
