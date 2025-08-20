@@ -158,6 +158,17 @@ update_application() {
     print_info "Cleaning build artifacts..."
     rm -rf build/ dist/ *.egg-info src/*.egg-info
     
+    # Copy test files for debugging
+    if [ -f "test_cowrie_parsing.py" ]; then
+        cp test_cowrie_parsing.py "$INSTALL_DIR/"
+        print_info "Copied parsing test script"
+    fi
+    
+    if [ -f "test_log_monitor.py" ]; then
+        cp test_log_monitor.py "$INSTALL_DIR/"
+        print_info "Copied log monitor test script"
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall

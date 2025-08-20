@@ -323,6 +323,8 @@ class LogViewer(Widget):
         """Refresh log data from the data source."""
         if self.data_source:
             self.log_entries = self.data_source()
+            # Sort entries by timestamp, most recent first
+            self.log_entries.sort(key=lambda x: x.timestamp, reverse=True)
             self.total_entries = len(self.log_entries)
             self._apply_filters()
             self._update_display()
@@ -390,6 +392,8 @@ class LogViewer(Widget):
             except ValueError:
                 pass  # Invalid date format, ignore filter
         
+        # Sort filtered entries by timestamp, most recent first
+        filtered.sort(key=lambda x: x.timestamp, reverse=True)
         self.filtered_entries = filtered
         self.current_page = 1  # Reset to first page when filters change
     
