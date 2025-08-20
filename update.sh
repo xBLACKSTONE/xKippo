@@ -169,6 +169,11 @@ update_application() {
         print_info "Copied log monitor test script"
     fi
     
+    if [ -f "debug_startup.py" ]; then
+        cp debug_startup.py "$INSTALL_DIR/"
+        print_info "Copied startup debug script"
+    fi
+    
     # Install updated package
     print_info "Installing updated package..."
     pip install -e . --upgrade --force-reinstall
