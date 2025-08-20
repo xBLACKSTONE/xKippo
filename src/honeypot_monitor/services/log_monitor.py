@@ -448,9 +448,8 @@ class LogMonitor(MonitorInterface):
             # Check if file exists now
             if os.path.exists(self.log_path):
                 try:
-                    # Re-initialize file position (start from beginning of new file)
-                    self._file_position = 0
-                    self._initialize_file_position()
+                    # Re-initialize file position (start from end of file to avoid re-reading)
+                    self._initialize_file_position()  # This sets position to end of file
                     self._reconnect_attempts = 0  # Reset on success
                 except Exception as e:
                     print(f"Reconnection failed: {str(e)}")

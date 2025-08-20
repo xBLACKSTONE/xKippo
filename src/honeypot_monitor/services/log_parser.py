@@ -117,7 +117,8 @@ class KippoLogParser(LogParserInterface):
         patterns = {}
         
         # More flexible base pattern that can handle various timestamp formats (Kippo and Cowrie)
-        base_pattern = r'(?P<timestamp>[^\[]*?) \[(?P<service>[^\]]+)\] '
+        # Updated to handle Cowrie's various service field formats
+        base_pattern = r'(?P<timestamp>[^\[]*?) \[(?P<service>[^\]]*)\] '
         
         # Connection established
         patterns['connection'] = re.compile(
@@ -156,17 +157,63 @@ class KippoLogParser(LogParserInterface):
             base_pattern + r'Connection lost: (?P<source_ip>\d+\.\d+\.\d+\.\d+):(?P<port>\d+) \((?P<session_id>[^)]+)\)'
         )
         
-        # Cowrie-specific patterns
+        # Cowrie-specific patterns based on actual log format
         patterns['cowrie_new_connection'] = re.compile(
             base_pattern + r'New connection: (?P<source_ip>\d+\.\d+\.\d+\.\d+):(?P<port>\d+) \([^)]+\) \[session: (?P<session_id>[^\]]+)\]'
         )
         
-        patterns['cowrie_login_attempt'] = re.compile(
-            base_pattern + r'login attempt \[(?P<username>[^/]+)/(?P<password>[^\]]+)\] failed'
+        # Login attempt patterns - handle both failed and successful logins
+        patterns['cowrie_login_failed'] = re.compile(
+            base_pattern + r'login attempt \[b?[\'"]?(?P<username>[^\'"/\]]+)[\'"]?/b?[\'"]?(?P<password>[^\'"\]]*)[\'"]?\] failed'
+        )
+        
+        patterns['cowrie_login_succeeded'] = re.compile(
+            base_pattern + r'login attempt \[b?[\'"]?(?P<username>[^\'"/\]]+)[\'"]?/b?[\'"]?(?P<password>[^\'"\]]*)[\'"]?\] succeeded'
         )
         
         patterns['cowrie_connection_lost'] = re.compile(
             base_pattern + r'Connection lost after (?P<duration>[\d.]+) seconds'
+        )
+        
+        # Additional Cowrie patterns for common log entries
+        patterns['cowrie_auth_failed'] = re.compile(
+            base_pattern + r'b?[\'"]?(?P<username>[^\'"\s]+)[\'"]? failed auth b?[\'"]?(?P<auth_type>[^\'"\s]+)[\'"]?'
+        )
+        
+        patterns['cowrie_unauthorized_login'] = re.compile(
+            base_pattern + r'unauthorized login: \(\)'
+        )
+        
+        patterns['cowrie_connection_info'] = re.compile(
+            base_pattern + r'connection lost'
+        )
+        
+        patterns['cowrie_exit_code'] = re.compile(
+            base_pattern + r'exitCode: (?P<exit_code>\d+)'
+        )
+        
+        # Command execution patterns
+        patterns['cowrie_command'] = re.compile(
+            base_pattern + r'CMD: (?P<command>.*)'
+        )
+        
+        patterns['cowrie_command_found'] = re.compile(
+            base_pattern + r'Command found: (?P<command>.*)'
+        )
+        
+        # Authentication success
+        patterns['cowrie_authenticated'] = re.compile(
+            base_pattern + r'b?[\'"]?(?P<username>[^\'"\s]+)[\'"]? authenticated with b?[\'"]?(?P<auth_type>[^\'"\s]+)[\'"]?'
+        )
+        
+        # Avatar/session management
+        patterns['cowrie_avatar_logout'] = re.compile(
+            base_pattern + r'avatar (?P<username>\w+) logging out'
+        )
+        
+        # Timeout pattern
+        patterns['cowrie_timeout'] = re.compile(
+            base_pattern + r'Timeout reached in HoneyPotSSHTransport'
         )
         
         # Generic pattern for unmatched lines
@@ -253,24 +300,36 @@ class KippoLogParser(LogParserInterface):
         
         # Determine event type and extract relevant data
         source_ip = groups.get('source_ip', '0.0.0.0')
+        
+        # Try to extract IP from service field if not found in groups
+        if source_ip == '0.0.0.0':
+            service = groups.get('service', '')
+            # Look for IP in service field like "HoneyPotSSHTransport,2931,35.240.141.162"
+            import re as re_module
+            ip_match = re_module.search(r'(\d+\.\d+\.\d+\.\d+)', service)
+            if ip_match:
+                source_ip = ip_match.group(1)
+        
         command = None
         file_path = None
         event_type = 'system'  # default
         
         if pattern_name == 'connection':
             event_type = 'connection'
-        elif pattern_name in ['auth_success', 'auth_failure']:
+        elif pattern_name in ['auth_success', 'auth_failure', 'cowrie_login_failed', 'cowrie_login_succeeded', 'cowrie_auth_failed', 'cowrie_unauthorized_login', 'cowrie_authenticated']:
             event_type = 'authentication'
-        elif pattern_name == 'command':
+        elif pattern_name in ['command', 'cowrie_command', 'cowrie_command_found']:
             event_type = 'command'
             command = groups.get('command', '')
         elif pattern_name in ['file_download', 'file_upload']:
             event_type = 'file_access'
             file_path = groups.get('file_path', '')
-        elif pattern_name == 'session_start':
-            event_type = 'login'
-        elif pattern_name == 'session_end':
+        elif pattern_name in ['session_start', 'cowrie_new_connection']:
+            event_type = 'connection'
+        elif pattern_name in ['session_end', 'cowrie_connection_lost', 'cowrie_connection_info', 'cowrie_avatar_logout', 'cowrie_timeout']:
             event_type = 'logout'
+        elif pattern_name == 'cowrie_exit_code':
+            event_type = 'system'
         else:
             event_type = 'system'
         
