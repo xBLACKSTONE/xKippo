@@ -99,27 +99,44 @@ class ServiceCoordinator:
             
             try:
                 # Start log monitoring
+                print("DEBUG: Starting log monitoring...")  # Debug output
                 if not self._start_log_monitoring():
+                    print("DEBUG: Log monitoring failed to start!")  # Debug output
                     return False
+                print("DEBUG: Log monitoring started successfully")  # Debug output
                 
                 # Start threat analysis
+                print("DEBUG: Starting threat analysis...")  # Debug output
                 if not self._start_threat_analysis():
+                    print("DEBUG: Threat analysis failed to start!")  # Debug output
                     return False
+                print("DEBUG: Threat analysis started successfully")  # Debug output
                 
                 # Start IRC notifications (optional)
+                print("DEBUG: Starting IRC notifications...")  # Debug output
                 self._start_irc_notifications()
+                print("DEBUG: IRC notifications started")  # Debug output
                 
                 # Start alert management
+                print("DEBUG: Starting alert management...")  # Debug output
                 if not self._start_alert_management():
+                    print("DEBUG: Alert management failed to start!")  # Debug output
                     return False
+                print("DEBUG: Alert management started successfully")  # Debug output
                 
                 # Start memory management
+                print("DEBUG: Starting memory management...")  # Debug output
                 if not self._start_memory_management():
+                    print("DEBUG: Memory management failed to start!")  # Debug output
                     return False
+                print("DEBUG: Memory management started successfully")  # Debug output
                 
                 # Start performance monitoring
+                print("DEBUG: Starting performance monitoring...")  # Debug output
                 if not self._start_performance_monitoring():
+                    print("DEBUG: Performance monitoring failed to start!")  # Debug output
                     return False
+                print("DEBUG: Performance monitoring started successfully")  # Debug output
                 
                 self.is_running = True
                 self.event_manager.publish_monitoring_status("started", "All services started")
@@ -401,14 +418,21 @@ class ServiceCoordinator:
     def _start_log_monitoring(self) -> bool:
         """Start log monitoring service."""
         try:
+            print("DEBUG: Checking log monitor initialization...")  # Debug output
             if not self.log_monitor:
+                print("DEBUG: Log monitor not initialized!")  # Debug output
                 raise RuntimeError("Log monitor not initialized")
+            print("DEBUG: Log monitor is initialized")  # Debug output
             
             # Register callback for new log entries
+            print("DEBUG: Registering callback...")  # Debug output
             self.log_monitor.register_callback(self._on_new_log_entry)
+            print("DEBUG: Callback registered")  # Debug output
             
             # Start monitoring
+            print(f"DEBUG: Starting monitoring of: {self.settings.honeypot.log_path}")  # Debug output
             self.log_monitor.start_monitoring(self.settings.honeypot.log_path)
+            print("DEBUG: Log monitoring start_monitoring() completed")  # Debug output
             
             self.service_states['log_monitor'] = 'running'
             logger.info("Log monitoring started")
