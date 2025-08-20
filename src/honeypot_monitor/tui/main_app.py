@@ -483,17 +483,22 @@ Navigation:
     def _handle_log_entry_event(self, event: Event) -> None:
         """Handle new log entry events."""
         try:
+            print(f"DEBUG: Received log entry event!")  # Debug output
             log_entry = event.data["log_entry"]
+            print(f"DEBUG: Log entry - Type: {log_entry.event_type}, IP: {log_entry.source_ip}")  # Debug output
             
             # Update dashboard if visible
             if self.current_view == "dashboard" and self.dashboard:
+                print(f"DEBUG: Updating dashboard with log entry")  # Debug output
                 self._update_dashboard_with_log_entry(log_entry)
             
             # Update log viewer if visible
             if self.current_view == "logs" and self.log_viewer:
+                print(f"DEBUG: Updating log viewer with log entry")  # Debug output
                 self._update_log_viewer_with_entry(log_entry)
                 
         except Exception as e:
+            print(f"DEBUG: Error handling log entry event: {e}")  # Debug output
             logging.error(f"Error handling log entry event: {e}")
     
     def _handle_threat_event(self, event: Event) -> None:
@@ -627,6 +632,8 @@ Navigation:
     def _update_dashboard_with_log_entry(self, log_entry: LogEntry) -> None:
         """Update dashboard with new log entry."""
         try:
+            print(f"DEBUG: _update_dashboard_with_log_entry called")  # Debug output
+            
             # Determine activity type based on log entry
             activity_type = "info"
             if log_entry.event_type == "authentication":
@@ -637,11 +644,14 @@ Navigation:
                 threat_map = {"low": "info", "medium": "warning", "high": "error", "critical": "error"}
                 activity_type = threat_map.get(log_entry.threat_level, "info")
             
+            print(f"DEBUG: Activity type determined: {activity_type}")  # Debug output
+            
             # Format message
             message = f"{log_entry.source_ip}: {log_entry.message}"
             if log_entry.command:
                 message = f"{log_entry.source_ip}: {log_entry.command}"
             
+            print(f"DEBUG: Adding activity to dashboard: {message[:50]}...")  # Debug output
             self.dashboard.add_activity(message, activity_type)
             
             # Update connection statistics (simplified)
