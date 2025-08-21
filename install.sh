@@ -130,7 +130,51 @@ check_pip() {
         print_success "Found pip"
         return 0
     else
-        print_error "pip is not installed"
+        print_warning "pip is not installed, will attempt to install it"
+        if command_exists apt-get; then
+            if prompt_yes_no "Install pip using apt-get?" "y"; then
+                sudo apt-get update
+                sudo apt-get install -y python3-pip
+                if command_exists pip3; then
+                    PIP_CMD="pip3"
+                    print_success "Successfully installed pip3"
+                    return 0
+                fi
+            fi
+        elif command_exists yum; then
+            if prompt_yes_no "Install pip using yum?" "y"; then
+                sudo yum install -y python3-pip
+                if command_exists pip3; then
+                    PIP_CMD="pip3"
+                    print_success "Successfully installed pip3"
+                    return 0
+                fi
+            fi
+        elif command_exists brew; then
+            if prompt_yes_no "Install pip using brew?" "y"; then
+                brew install python3-pip
+                if command_exists pip3; then
+                    PIP_CMD="pip3"
+                    print_success "Successfully installed pip3"
+                    return 0
+                fi
+            fi
+        else
+            print_warning "Attempting to install pip using get-pip.py..."
+            curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            $PYTHON_CMD get-pip.py
+            rm get-pip.py
+            if command_exists pip3; then
+                PIP_CMD="pip3"
+                print_success "Successfully installed pip3"
+                return 0
+            elif command_exists pip; then
+                PIP_CMD="pip"
+                print_success "Successfully installed pip"
+                return 0
+            fi
+        fi
+        print_error "Failed to install pip. Please install it manually."
         return 1
     fi
 }
@@ -144,6 +188,24 @@ install_system_deps() {
     
     if ! command_exists git; then
         missing_deps+=("git")
+    fi
+    
+    # Additional dependencies that might be needed
+    if command_exists apt-get; then
+        # For psutil and other compiled dependencies
+        if ! command_exists gcc; then
+            missing_deps+=("gcc")
+        fi
+        if ! command_exists python3-dev || ! command_exists python3.8-dev; then
+            missing_deps+=("python3-dev")
+        fi
+    elif command_exists yum; then
+        if ! command_exists gcc; then
+            missing_deps+=("gcc")
+        fi
+        if ! command_exists python3-devel; then
+            missing_deps+=("python3-devel")
+        fi
     fi
     
     if [ ${#missing_deps[@]} -gt 0 ]; then
@@ -207,23 +269,49 @@ install_python_deps() {
     
     # Upgrade pip first
     print_info "Upgrading pip..."
-    pip install --upgrade pip
+    $PIP_CMD install --upgrade pip
+    
+    # Install required packages explicitly before attempting to install the package
+    print_info "Installing core dependencies..."
+    $PIP_CMD install wheel setuptools
+    
+    # Install psutil and textual explicitly with possible build dependencies
+    print_info "Installing psutil and textual..."
+    $PIP_CMD install psutil textual
     
     # Install the package in development mode
     print_info "Installing honeypot-monitor and dependencies..."
-    pip install -e .
+    $PIP_CMD install -e .
     
     if [ $? -eq 0 ]; then
         print_success "Python dependencies installed successfully"
         
         # Verify critical dependencies are installed
         print_info "Verifying installation..."
-        python -c "import psutil, textual, watchdog, yaml" 2>/dev/null
-        if [ $? -eq 0 ]; then
-            print_success "All critical dependencies verified"
-        else
-            print_warning "Some dependencies may not be properly installed"
-        fi
+        # Check each dependency separately for better error reporting
+        for dep in psutil textual watchdog yaml; do
+            print_info "Checking $dep..."
+            python -c "import $dep" 2>/dev/null
+            if [ $? -ne 0 ]; then
+                print_warning "$dep may not be installed properly, attempting to reinstall..."
+                pip install --upgrade $dep
+                python -c "import $dep" 2>/dev/null
+                if [ $? -ne 0 ]; then
+                    print_error "Failed to install $dep. You may need to install development libraries."
+                    if [ "$dep" = "psutil" ]; then
+                        if command_exists apt-get; then
+                            print_info "For psutil, you might need: sudo apt-get install python3-dev gcc"
+                        elif command_exists yum; then
+                            print_info "For psutil, you might need: sudo yum install python3-devel gcc"
+                        fi
+                    fi
+                else
+                    print_success "Successfully reinstalled $dep"
+                fi
+            else
+                print_success "$dep is properly installed"
+            fi
+        done
     else
         print_error "Failed to install Python dependencies"
         print_error "Try running: pip install -r requirements.txt"

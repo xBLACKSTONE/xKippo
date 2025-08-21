@@ -59,6 +59,11 @@ class HoneypotMonitorApp(App):
         self.analysis_panel: Optional[AnalysisPanel] = None
         self.settings_panel: Optional[SettingsPanel] = None
         
+        # Event buffers for components not yet initialized
+        self.dashboard_buffer = {"activities": [], "alerts": [], "connection_stats": None, "irc_status": None}
+        self.log_viewer_buffer = {"log_entries": []}
+        self.analysis_buffer = {"threat_assessments": [], "patterns": []}
+        
         # Service coordinator for backend integration
         self.service_coordinator: Optional[ServiceCoordinator] = None
         self._setup_logging()
@@ -92,6 +97,13 @@ class HoneypotMonitorApp(App):
         print("DEBUG: on_mount() called")  # Debug output
         self.title = self.TITLE
         self.sub_title = self.SUB_TITLE
+        
+        # Add debug message to track event buffers
+        print(f"DEBUG: Initial buffer states - Dashboard: {len(self.dashboard_buffer['activities'])} activities, "
+              f"{len(self.dashboard_buffer['alerts'])} alerts; "
+              f"Log viewer: {len(self.log_viewer_buffer['log_entries'])} entries; "
+              f"Analysis: {len(self.analysis_buffer['threat_assessments'])} threats, "
+              f"{len(self.analysis_buffer['patterns'])} patterns")
         
         print("DEBUG: About to show dashboard")  # Debug output
         self.action_show_dashboard()
@@ -149,6 +161,40 @@ class HoneypotMonitorApp(App):
         # Create and mount dashboard only if it doesn't exist
         if self.dashboard is None:
             self.dashboard = Dashboard()
+            
+            # Apply any buffered activities and alerts
+            print(f"DEBUG: Applying buffered dashboard data: {len(self.dashboard_buffer['activities'])} activities, {len(self.dashboard_buffer['alerts'])} alerts")
+            
+            # Apply buffered activities
+            for message, activity_type in self.dashboard_buffer["activities"]:
+                try:
+                    self.dashboard.add_activity(message, activity_type)
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered activity: {e}")
+            
+            # Apply buffered alerts
+            for message, alert_type in self.dashboard_buffer["alerts"]:
+                try:
+                    self.dashboard.add_alert(message, alert_type)
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered alert: {e}")
+            
+            # Apply buffered connection stats
+            if self.dashboard_buffer["connection_stats"]:
+                try:
+                    self.dashboard.update_connection_stats(**self.dashboard_buffer["connection_stats"])
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered connection stats: {e}")
+            
+            # Apply buffered IRC status
+            if self.dashboard_buffer["irc_status"]:
+                try:
+                    self.dashboard.update_irc_status(**self.dashboard_buffer["irc_status"])
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered IRC status: {e}")
+            
+            # Clear buffer after applying
+            self.dashboard_buffer = {"activities": [], "alerts": [], "connection_stats": None, "irc_status": None}
         
         main_content.mount(self.dashboard)
         
@@ -163,6 +209,19 @@ class HoneypotMonitorApp(App):
         # Create and mount log viewer only if it doesn't exist
         if self.log_viewer is None:
             self.log_viewer = LogViewer()
+            
+            # Apply any buffered log entries
+            print(f"DEBUG: Applying buffered log entries: {len(self.log_viewer_buffer['log_entries'])}")
+            
+            # Apply buffered log entries
+            for log_entry in self.log_viewer_buffer["log_entries"]:
+                try:
+                    self.log_viewer.add_log_entry(log_entry)
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered log entry: {e}")
+            
+            # Clear buffer after applying
+            self.log_viewer_buffer = {"log_entries": []}
         
         main_content.mount(self.log_viewer)
     
@@ -186,6 +245,26 @@ class HoneypotMonitorApp(App):
         # Create and mount analysis panel only if it doesn't exist
         if self.analysis_panel is None:
             self.analysis_panel = AnalysisPanel()
+            
+            # Apply any buffered threat assessments and patterns
+            print(f"DEBUG: Applying buffered analysis data: {len(self.analysis_buffer['threat_assessments'])} threats, {len(self.analysis_buffer['patterns'])} patterns")
+            
+            # Apply buffered threat assessments
+            for threat, source_ip, recommended_action in self.analysis_buffer["threat_assessments"]:
+                try:
+                    self.analysis_panel.add_threat_assessment(threat, source_ip, recommended_action)
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered threat assessment: {e}")
+            
+            # Apply buffered patterns
+            for pattern in self.analysis_buffer["patterns"]:
+                try:
+                    self.analysis_panel.add_pattern(pattern)
+                except Exception as e:
+                    print(f"DEBUG: Error applying buffered pattern: {e}")
+            
+            # Clear buffer after applying
+            self.analysis_buffer = {"threat_assessments": [], "patterns": []}
         
         main_content.mount(self.analysis_panel)
         
@@ -532,20 +611,27 @@ Navigation:
             
             print(f"DEBUG: Current view is: {self.current_view}")  # Debug which view is active
             print(f"DEBUG: Dashboard object exists: {self.dashboard is not None}")  # Debug if dashboard is initialized
+            print(f"DEBUG: Log viewer object exists: {self.log_viewer is not None}")  # Debug if log viewer is initialized
             
-            # Update dashboard if visible
-            if self.current_view == "dashboard" and self.dashboard:
+            # Print buffer sizes
+            print(f"DEBUG: Buffer sizes - Dashboard: {len(self.dashboard_buffer['activities'])} activities, "
+                  f"{len(self.dashboard_buffer['alerts'])} alerts; "
+                  f"Log viewer: {len(self.log_viewer_buffer['log_entries'])} entries")
+            
+            
+            # Always update dashboard if it exists, regardless of current view
+            if self.dashboard:
                 print(f"DEBUG: Updating dashboard with log entry")  # Debug output
                 self._update_dashboard_with_log_entry(log_entry)
             else:
-                print(f"DEBUG: Not updating dashboard - current_view: {self.current_view}, dashboard exists: {self.dashboard is not None}")
+                print(f"DEBUG: Not updating dashboard - dashboard exists: {self.dashboard is not None}")
             
-            # Update log viewer if visible
-            if self.current_view == "logs" and self.log_viewer:
+            # Always update log viewer if it exists, regardless of current view
+            if self.log_viewer:
                 print(f"DEBUG: Updating log viewer with log entry")  # Debug output
                 self._update_log_viewer_with_entry(log_entry)
             else:
-                print(f"DEBUG: Not updating log viewer - current_view: {self.current_view}, log_viewer exists: {self.log_viewer is not None}")
+                print(f"DEBUG: Not updating log viewer - log_viewer exists: {self.log_viewer is not None}")
                 
         except Exception as e:
             print(f"DEBUG: Error handling log entry event: {e}")  # Debug output
@@ -560,17 +646,31 @@ Navigation:
             source_ip = event.data["source_ip"]
             log_entry = event.data["log_entry"]
             
-            # Update dashboard with threat alert
-            if self.current_view == "dashboard" and self.dashboard:
-                severity_map = {"low": "info", "medium": "warning", "high": "error", "critical": "error"}
-                alert_type = severity_map.get(threat.severity, "warning")
-                
-                message = f"Threat detected from {source_ip}: {threat.category}"
-                self.dashboard.add_alert(message, alert_type)
+            # Process threat alert for dashboard
+            severity_map = {"low": "info", "medium": "warning", "high": "error", "critical": "error"}
+            alert_type = severity_map.get(threat.severity, "warning")
             
-            # Update analysis panel if visible
-            if self.current_view == "analysis" and self.analysis_panel:
+            message = f"Threat detected from {source_ip}: {threat.category}"
+            
+            if self.dashboard:
+                # Send to dashboard directly
+                self.dashboard.add_alert(message, alert_type)
+            else:
+                # Buffer the alert
+                self.dashboard_buffer["alerts"].append((message, alert_type))
+                # Limit buffer size
+                if len(self.dashboard_buffer["alerts"]) > 50:  # Keep last 50 alerts
+                    self.dashboard_buffer["alerts"] = self.dashboard_buffer["alerts"][-50:]
+            
+            # Process threat assessment for analysis panel
+            if self.analysis_panel:
                 self.analysis_panel.add_threat_assessment(threat, source_ip, threat.recommended_action)
+            else:
+                # Buffer the threat assessment
+                self.analysis_buffer["threat_assessments"].append((threat, source_ip, threat.recommended_action))
+                # Limit buffer size
+                if len(self.analysis_buffer["threat_assessments"]) > 50:  # Keep last 50 assessments
+                    self.analysis_buffer["threat_assessments"] = self.analysis_buffer["threat_assessments"][-50:]
                 
         except Exception as e:
             logging.error(f"Error handling threat event: {e}")
@@ -581,8 +681,8 @@ Navigation:
             source_ip = event.data["source_ip"]
             first_seen = event.data["first_seen"]
             
-            # Update dashboard
-            if self.current_view == "dashboard" and self.dashboard:
+            # Always update dashboard if it exists
+            if self.dashboard:
                 message = f"New host detected: {source_ip}"
                 self.dashboard.add_activity(message, "info")
                 
@@ -594,17 +694,30 @@ Navigation:
         try:
             pattern = event.data["pattern"]
             
-            # Update analysis panel if visible
-            if self.current_view == "analysis" and self.analysis_panel:
+            # Process pattern for analysis panel
+            if self.analysis_panel:
                 self.analysis_panel.add_pattern(pattern)
+            else:
+                # Buffer the pattern
+                self.analysis_buffer["patterns"].append(pattern)
+                # Limit buffer size
+                if len(self.analysis_buffer["patterns"]) > 50:  # Keep last 50 patterns
+                    self.analysis_buffer["patterns"] = self.analysis_buffer["patterns"][-50:]
             
-            # Update dashboard with pattern alert
-            if self.current_view == "dashboard" and self.dashboard:
-                severity_map = {"low": "info", "medium": "warning", "high": "error", "critical": "error"}
-                alert_type = severity_map.get(pattern.get("severity", "medium"), "warning")
-                
-                message = f"Pattern detected: {pattern.get('type', 'unknown')}"
+            # Process pattern alert for dashboard
+            severity_map = {"low": "info", "medium": "warning", "high": "error", "critical": "error"}
+            alert_type = severity_map.get(pattern.get("severity", "medium"), "warning")
+            
+            message = f"Pattern detected: {pattern.get('type', 'unknown')}"
+            
+            if self.dashboard:
                 self.dashboard.add_alert(message, alert_type)
+            else:
+                # Buffer the alert
+                self.dashboard_buffer["alerts"].append((message, alert_type))
+                # Limit buffer size
+                if len(self.dashboard_buffer["alerts"]) > 50:  # Keep last 50 alerts
+                    self.dashboard_buffer["alerts"] = self.dashboard_buffer["alerts"][-50:]
                 
         except Exception as e:
             logging.error(f"Error handling pattern event: {e}")
@@ -677,16 +790,22 @@ Navigation:
         error_msg = event.data.get("error_message", "Unknown system error")
         logging.error(f"System error: {error_msg}")
         
-        # Show error in dashboard if visible
-        if self.current_view == "dashboard" and self.dashboard:
-            self.dashboard.add_alert(f"System error: {error_msg}", "error")
+        # Process system error for dashboard
+        message = f"System error: {error_msg}"
+        
+        if self.dashboard:
+            self.dashboard.add_alert(message, "error")
+        else:
+            # Buffer the error alert
+            self.dashboard_buffer["alerts"].append((message, "error"))
+            # Limit buffer size
+            if len(self.dashboard_buffer["alerts"]) > 50:  # Keep last 50 alerts
+                self.dashboard_buffer["alerts"] = self.dashboard_buffer["alerts"][-50:]
     
     def _update_dashboard_with_log_entry(self, log_entry: LogEntry) -> None:
         """Update dashboard with new log entry."""
         try:
             print(f"DEBUG: _update_dashboard_with_log_entry called")  # Debug output
-            print(f"DEBUG: Dashboard object type: {type(self.dashboard)}")
-            print(f"DEBUG: Dashboard methods: {[method for method in dir(self.dashboard) if not method.startswith('_') and callable(getattr(self.dashboard, method))]}")
             
             # Determine activity type based on log entry
             activity_type = "info"
@@ -705,21 +824,6 @@ Navigation:
             if log_entry.command:
                 message = f"{log_entry.source_ip}: {log_entry.command}"
             
-            print(f"DEBUG: About to call dashboard.add_activity with: {message[:50]}...")  # Debug output
-            
-            # Check if the dashboard's add_activity method exists
-            if hasattr(self.dashboard, 'add_activity') and callable(getattr(self.dashboard, 'add_activity')):
-                print(f"DEBUG: dashboard.add_activity method exists")
-                try:
-                    self.dashboard.add_activity(message, activity_type)
-                    print(f"DEBUG: Successfully added activity to dashboard")
-                except Exception as e:
-                    print(f"DEBUG: Exception in dashboard.add_activity: {e}")
-                    import traceback
-                    traceback.print_exc()
-            else:
-                print(f"DEBUG: ERROR - dashboard.add_activity method does not exist!")
-            
             # Update connection statistics (simplified)
             if hasattr(self, '_connection_stats'):
                 print(f"DEBUG: Updating existing connection stats")
@@ -730,9 +834,26 @@ Navigation:
             
             print(f"DEBUG: Connection stats: {self._connection_stats}")
             
-            # Check if update_connection_stats method exists
-            if hasattr(self.dashboard, 'update_connection_stats') and callable(getattr(self.dashboard, 'update_connection_stats')):
-                print(f"DEBUG: dashboard.update_connection_stats method exists")
+            if self.dashboard is None:
+                # Store in buffer if dashboard doesn't exist yet
+                print(f"DEBUG: Dashboard doesn't exist, buffering activity")
+                self.dashboard_buffer["activities"].append((message, activity_type))
+                self.dashboard_buffer["connection_stats"] = self._connection_stats
+                # Limit buffer size to avoid memory issues
+                if len(self.dashboard_buffer["activities"]) > 100:  # Keep last 100 activities
+                    self.dashboard_buffer["activities"] = self.dashboard_buffer["activities"][-100:]
+            else:
+                # Apply to dashboard directly
+                print(f"DEBUG: About to call dashboard.add_activity with: {message[:50]}...")  # Debug output
+                
+                try:
+                    self.dashboard.add_activity(message, activity_type)
+                    print(f"DEBUG: Successfully added activity to dashboard")
+                except Exception as e:
+                    print(f"DEBUG: Exception in dashboard.add_activity: {e}")
+                    import traceback
+                    traceback.print_exc()
+                
                 try:
                     self.dashboard.update_connection_stats(**self._connection_stats)
                     print(f"DEBUG: Successfully updated connection stats")
@@ -740,8 +861,6 @@ Navigation:
                     print(f"DEBUG: Exception in dashboard.update_connection_stats: {e}")
                     import traceback
                     traceback.print_exc()
-            else:
-                print(f"DEBUG: ERROR - dashboard.update_connection_stats method does not exist!")
             
         except Exception as e:
             print(f"DEBUG: Error updating dashboard with log entry: {e}")
@@ -752,9 +871,21 @@ Navigation:
     def _update_log_viewer_with_entry(self, log_entry: LogEntry) -> None:
         """Update log viewer with new log entry."""
         try:
-            # Add entry to log viewer
-            self.log_viewer.add_log_entry(log_entry)
+            if self.log_viewer is None:
+                # Store in buffer if log viewer doesn't exist yet
+                print(f"DEBUG: Log viewer doesn't exist, buffering log entry")
+                self.log_viewer_buffer["log_entries"].append(log_entry)
+                # Limit buffer size to avoid memory issues
+                if len(self.log_viewer_buffer["log_entries"]) > 1000:  # Keep last 1000 entries
+                    self.log_viewer_buffer["log_entries"] = self.log_viewer_buffer["log_entries"][-1000:]
+            else:
+                # Add entry to log viewer
+                print(f"DEBUG: Adding log entry to log viewer")
+                self.log_viewer.add_log_entry(log_entry)
         except Exception as e:
+            print(f"DEBUG: Error updating log viewer with entry: {e}")
+            import traceback
+            traceback.print_exc()
             logging.error(f"Error updating log viewer with entry: {e}")
 
 
