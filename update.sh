@@ -101,13 +101,17 @@ check_installation() {
 check_source_directory() {
     print_step "Checking source directory..."
     
-    if [ ! -f "setup.py" ] || [ ! -f "requirements.txt" ] || [ ! -d "src/honeypot_monitor" ]; then
+    # Store the absolute path of the source directory
+    SOURCE_DIR="$(pwd)"
+    export SOURCE_DIR
+    
+    if [ ! -f "$SOURCE_DIR/setup.py" ] || [ ! -f "$SOURCE_DIR/requirements.txt" ] || [ ! -d "$SOURCE_DIR/src/honeypot_monitor" ]; then
         print_error "This script must be run from the honeypot monitor source directory"
         print_error "Make sure you're in the directory containing setup.py and src/"
         exit 1
     fi
     
-    print_success "Source directory verified"
+    print_success "Source directory verified: $SOURCE_DIR"
 }
 
 # Backup current configuration
@@ -147,6 +151,9 @@ stop_service() {
 update_application() {
     print_step "Updating application code..."
     
+    # Save the current source directory
+    SOURCE_DIR="$(pwd)"
+    
     # Activate virtual environment
     source "$VENV_DIR/bin/activate"
     
@@ -156,51 +163,54 @@ update_application() {
     
     # Clean up any existing build artifacts
     print_info "Cleaning build artifacts..."
-    rm -rf build/ dist/ *.egg-info src/*.egg-info
+    rm -rf "$SOURCE_DIR"/build/ "$SOURCE_DIR"/dist/ "$SOURCE_DIR"/*.egg-info "$SOURCE_DIR"/src/*.egg-info
     
     # Copy test files for debugging
-    if [ -f "test_cowrie_parsing.py" ]; then
-        cp test_cowrie_parsing.py "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/test_cowrie_parsing.py" ]; then
+        cp "$SOURCE_DIR/test_cowrie_parsing.py" "$INSTALL_DIR/"
         print_info "Copied parsing test script"
     fi
     
-    if [ -f "test_log_monitor.py" ]; then
-        cp test_log_monitor.py "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/test_log_monitor.py" ]; then
+        cp "$SOURCE_DIR/test_log_monitor.py" "$INSTALL_DIR/"
         print_info "Copied log monitor test script"
     fi
     
-    if [ -f "debug_startup.py" ]; then
-        cp debug_startup.py "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/debug_startup.py" ]; then
+        cp "$SOURCE_DIR/debug_startup.py" "$INSTALL_DIR/"
         print_info "Copied startup debug script"
     fi
     
-    if [ -f "fix_launcher.sh" ]; then
-        cp fix_launcher.sh "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/fix_launcher.sh" ]; then
+        cp "$SOURCE_DIR/fix_launcher.sh" "$INSTALL_DIR/"
         print_info "Copied launcher fix script"
     fi
     
-    if [ -f "simple_monitor.py" ]; then
-        cp simple_monitor.py "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/simple_monitor.py" ]; then
+        cp "$SOURCE_DIR/simple_monitor.py" "$INSTALL_DIR/"
         print_info "Copied simple monitor script"
     fi
     
-    if [ -f "simple_tui.py" ]; then
-        cp simple_tui.py "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/simple_tui.py" ]; then
+        cp "$SOURCE_DIR/simple_tui.py" "$INSTALL_DIR/"
         print_info "Copied simple TUI script"
     fi
     
-    if [ -f "create_working_launcher.sh" ]; then
-        cp create_working_launcher.sh "$INSTALL_DIR/"
+    if [ -f "$SOURCE_DIR/create_working_launcher.sh" ]; then
+        cp "$SOURCE_DIR/create_working_launcher.sh" "$INSTALL_DIR/"
         chmod +x "$INSTALL_DIR/create_working_launcher.sh"
         print_info "Copied working launcher script"
         
-        # Run it to create the working launcher
-        cd "$INSTALL_DIR" && ./create_working_launcher.sh
+        # Save current directory, run the script, then return
+        pushd "$INSTALL_DIR" > /dev/null
+        ./create_working_launcher.sh
+        popd > /dev/null
     fi
     
     # Install updated package
     print_info "Installing updated package..."
-    pip install -e . --upgrade --force-reinstall
+    # Make sure we're installing from the source directory
+    pip install -e "$SOURCE_DIR" --upgrade --force-reinstall
     
     if [ $? -eq 0 ]; then
         print_success "Application updated successfully"
@@ -209,7 +219,7 @@ update_application() {
         
         # Fallback: install dependencies directly and copy files
         print_info "Installing dependencies from requirements.txt..."
-        pip install -r requirements.txt --upgrade
+        pip install -r "$SOURCE_DIR/requirements.txt" --upgrade
         
         if [ $? -eq 0 ]; then
             print_info "Copying updated source files..."
@@ -223,7 +233,7 @@ update_application() {
                 rm -rf "$ACTUAL_SITE_PACKAGES/honeypot_monitor_cli"* 2>/dev/null || true
                 
                 # Copy source files
-                cp -r src/honeypot_monitor "$ACTUAL_SITE_PACKAGES/"
+                cp -r "$SOURCE_DIR/src/honeypot_monitor" "$ACTUAL_SITE_PACKAGES/"
                 print_success "Source files copied to: $ACTUAL_SITE_PACKAGES/honeypot_monitor"
                 
                 # Create a simple __init__.py if it doesn't exist
