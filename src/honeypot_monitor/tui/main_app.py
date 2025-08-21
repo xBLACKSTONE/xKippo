@@ -487,11 +487,11 @@ Navigation:
             # Start services in thread with timeout
             service_thread = threading.Thread(target=start_services, daemon=True)
             service_thread.start()
-            service_thread.join(timeout=10.0)  # 10 second timeout
+            service_thread.join(timeout=30.0)  # 30 second timeout (increased from 10)
             
             if service_thread.is_alive():
-                print("DEBUG: Service startup timed out after 10 seconds")  # Debug output
-                self.update_monitoring_status("Startup timeout")
+                print("DEBUG: Service startup timed out after 30 seconds")  # Debug output
+                self.update_monitoring_status("Startup timeout (30s)")
                 return
             
             if exception:
@@ -525,22 +525,32 @@ Navigation:
     def _handle_log_entry_event(self, event: Event) -> None:
         """Handle new log entry events."""
         try:
-            print(f"DEBUG: Received log entry event!")  # Debug output
+            print(f"DEBUG: Received log entry event from {event.source}!")  # Debug output
             log_entry = event.data["log_entry"]
-            print(f"DEBUG: Log entry - Type: {log_entry.event_type}, IP: {log_entry.source_ip}")  # Debug output
+            print(f"DEBUG: Log entry - Time: {log_entry.timestamp}, Type: {log_entry.event_type}, IP: {log_entry.source_ip}")  # Debug output
+            print(f"DEBUG: Log entry message: {log_entry.message[:100]}...")  # Debug output
+            
+            print(f"DEBUG: Current view is: {self.current_view}")  # Debug which view is active
+            print(f"DEBUG: Dashboard object exists: {self.dashboard is not None}")  # Debug if dashboard is initialized
             
             # Update dashboard if visible
             if self.current_view == "dashboard" and self.dashboard:
                 print(f"DEBUG: Updating dashboard with log entry")  # Debug output
                 self._update_dashboard_with_log_entry(log_entry)
+            else:
+                print(f"DEBUG: Not updating dashboard - current_view: {self.current_view}, dashboard exists: {self.dashboard is not None}")
             
             # Update log viewer if visible
             if self.current_view == "logs" and self.log_viewer:
                 print(f"DEBUG: Updating log viewer with log entry")  # Debug output
                 self._update_log_viewer_with_entry(log_entry)
+            else:
+                print(f"DEBUG: Not updating log viewer - current_view: {self.current_view}, log_viewer exists: {self.log_viewer is not None}")
                 
         except Exception as e:
             print(f"DEBUG: Error handling log entry event: {e}")  # Debug output
+            import traceback
+            traceback.print_exc()  # Print full stack trace
             logging.error(f"Error handling log entry event: {e}")
     
     def _handle_threat_event(self, event: Event) -> None:
@@ -675,6 +685,8 @@ Navigation:
         """Update dashboard with new log entry."""
         try:
             print(f"DEBUG: _update_dashboard_with_log_entry called")  # Debug output
+            print(f"DEBUG: Dashboard object type: {type(self.dashboard)}")
+            print(f"DEBUG: Dashboard methods: {[method for method in dir(self.dashboard) if not method.startswith('_') and callable(getattr(self.dashboard, method))]}")
             
             # Determine activity type based on log entry
             activity_type = "info"
@@ -693,18 +705,48 @@ Navigation:
             if log_entry.command:
                 message = f"{log_entry.source_ip}: {log_entry.command}"
             
-            print(f"DEBUG: Adding activity to dashboard: {message[:50]}...")  # Debug output
-            self.dashboard.add_activity(message, activity_type)
+            print(f"DEBUG: About to call dashboard.add_activity with: {message[:50]}...")  # Debug output
+            
+            # Check if the dashboard's add_activity method exists
+            if hasattr(self.dashboard, 'add_activity') and callable(getattr(self.dashboard, 'add_activity')):
+                print(f"DEBUG: dashboard.add_activity method exists")
+                try:
+                    self.dashboard.add_activity(message, activity_type)
+                    print(f"DEBUG: Successfully added activity to dashboard")
+                except Exception as e:
+                    print(f"DEBUG: Exception in dashboard.add_activity: {e}")
+                    import traceback
+                    traceback.print_exc()
+            else:
+                print(f"DEBUG: ERROR - dashboard.add_activity method does not exist!")
             
             # Update connection statistics (simplified)
             if hasattr(self, '_connection_stats'):
+                print(f"DEBUG: Updating existing connection stats")
                 self._connection_stats['total'] += 1
             else:
+                print(f"DEBUG: Creating new connection stats")
                 self._connection_stats = {'active': 1, 'total': 1, 'unique': 1, 'blocked': 0}
             
-            self.dashboard.update_connection_stats(**self._connection_stats)
+            print(f"DEBUG: Connection stats: {self._connection_stats}")
+            
+            # Check if update_connection_stats method exists
+            if hasattr(self.dashboard, 'update_connection_stats') and callable(getattr(self.dashboard, 'update_connection_stats')):
+                print(f"DEBUG: dashboard.update_connection_stats method exists")
+                try:
+                    self.dashboard.update_connection_stats(**self._connection_stats)
+                    print(f"DEBUG: Successfully updated connection stats")
+                except Exception as e:
+                    print(f"DEBUG: Exception in dashboard.update_connection_stats: {e}")
+                    import traceback
+                    traceback.print_exc()
+            else:
+                print(f"DEBUG: ERROR - dashboard.update_connection_stats method does not exist!")
             
         except Exception as e:
+            print(f"DEBUG: Error updating dashboard with log entry: {e}")
+            import traceback
+            traceback.print_exc()
             logging.error(f"Error updating dashboard with log entry: {e}")
     
     def _update_log_viewer_with_entry(self, log_entry: LogEntry) -> None:

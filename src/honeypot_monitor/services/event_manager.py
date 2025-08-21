@@ -390,12 +390,29 @@ class EventManager:
         Args:
             event: Event to process
         """
+        print(f"DEBUG EVENT MANAGER: Processing event type={event.event_type.value}, source={event.source}, time={event.timestamp}")
+        
         with self._lock:
             subscribers = self.subscribers.get(event.event_type, []).copy()
+            
+        # Log subscriber count
+        subscriber_count = len(subscribers)
+        print(f"DEBUG EVENT MANAGER: Found {subscriber_count} subscribers for event {event.event_type.value}")
+        
+        if subscriber_count == 0:
+            print(f"DEBUG EVENT MANAGER: WARNING - No subscribers for {event.event_type.value} events!")
+            # List all registered event types with subscribers
+            all_events = {event_type.value: len(callbacks) for event_type, callbacks in self.subscribers.items()}
+            print(f"DEBUG EVENT MANAGER: Registered event types: {all_events}")
         
         # Notify all subscribers
-        for callback in subscribers:
+        for i, callback in enumerate(subscribers):
             try:
+                print(f"DEBUG EVENT MANAGER: Calling subscriber {i+1}/{subscriber_count} for {event.event_type.value}")
                 callback(event)
+                print(f"DEBUG EVENT MANAGER: Successfully called subscriber {i+1}")
             except Exception as e:
+                print(f"DEBUG EVENT MANAGER: Error in subscriber {i+1}: {e}")
+                import traceback
+                traceback.print_exc()
                 logger.error(f"Error in event callback for {event.event_type.value}: {e}")
