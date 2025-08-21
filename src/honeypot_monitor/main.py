@@ -46,6 +46,17 @@ def main():
         if args.log_path:
             print(f"DEBUG: Overriding log path to: {args.log_path}")  # Debug output
             config.honeypot.log_path = args.log_path
+            
+            # Verify log file exists
+            if not Path(args.log_path).exists():
+                print(f"Log file not found: {args.log_path}")
+                sys.exit(1)
+        else:
+            # Verify default log file exists
+            if not Path(config.honeypot.log_path).exists():
+                print(f"Default log file not found: {config.honeypot.log_path}")
+                print("Please provide a valid log file path with --log-path option")
+                sys.exit(1)
         
         # Start the TUI application with integrated services
         print("DEBUG: Starting TUI application...")  # Debug output
