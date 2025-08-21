@@ -141,7 +141,7 @@ class SimpleHoneypotMonitor(App):
             self.exit()
 
 if __name__ == "__main__":
-    log_path = "/home/cowrie/cowrie/var/log/cowrie/cowrie.log"
+    log_path = "/private/var/folders/wf/wk5_cgz15tx8368cbf_68_2c0000gr/T/tmp-27121-guAJXT0KUdwY/cowrie.log"
     
     if not os.path.exists(log_path):
         print(f"Log file not found: {log_path}")
