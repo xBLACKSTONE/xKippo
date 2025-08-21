@@ -15,7 +15,9 @@ INSTALL_DIR="/home/cowrie/.honeypot-monitor"
 VENV_DIR="/home/cowrie/.honeypot-monitor/venv"
 
 # Use virtual environment Python directly
-"$VENV_DIR/bin/python" "$INSTALL_DIR/simple_tui.py" "$@"
+# Allow passing log path as parameter or use default
+LOG_PATH=${1:-"/opt/kippo/log/kippo.log"}
+"$VENV_DIR/bin/python" "$INSTALL_DIR/simple_tui.py" --log-path "$LOG_PATH"
 EOF
 
 chmod +x "$INSTALL_DIR/honeypot-monitor-working"

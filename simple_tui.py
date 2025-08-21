@@ -141,7 +141,15 @@ class SimpleHoneypotMonitor(App):
             self.exit()
 
 if __name__ == "__main__":
-    log_path = "/private/var/folders/wf/wk5_cgz15tx8368cbf_68_2c0000gr/T/tmp-27121-guAJXT0KUdwY/cowrie.log"
+    import argparse
+    
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Simple Honeypot Monitor")
+    parser.add_argument("--log-path", type=str, default="/opt/kippo/log/kippo.log",
+                      help="Path to honeypot log file")
+    args = parser.parse_args()
+    
+    log_path = args.log_path
     
     if not os.path.exists(log_path):
         print(f"Log file not found: {log_path}")
